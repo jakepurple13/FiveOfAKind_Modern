@@ -37,7 +37,7 @@ import kotlin.time.ExperimentalTime
 @Composable
 @Preview
 fun App(
-    database: YahtzeeDatabase
+    database: YahtzeeDatabase,
 ) {
     MaterialTheme(
         colorScheme = buildColorScheme(isSystemInDarkTheme())
@@ -97,7 +97,8 @@ internal fun YahtzeeScreen(
 
     if (statsDialog) {
         ModalBottomSheet(
-            onDismissRequest = { statsDialog = false }
+            onDismissRequest = { statsDialog = false },
+            containerColor = MaterialTheme.colorScheme.surface,
         ) { BottomSheetContent(stats) }
     }
 
@@ -109,12 +110,17 @@ internal fun YahtzeeScreen(
                     topBar = {
                         TopAppBar(
                             title = { Text("High Scores") },
-                            actions = { Text(highScores.size.toString()) },
+                            actions = {
+                                Text(
+                                    highScores.size.toString(),
+                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                )
+                            },
                             navigationIcon = {
                                 TextButton(
                                     onClick = { statsDialog = true }
                                 ) { Text("Stats") }
-                            }
+                            },
                         )
                     }
                 ) { p ->
@@ -169,7 +175,9 @@ internal fun YahtzeeScreen(
             bottomBar = { BottomBarDiceRow(vm, diceLook) },
         ) { p ->
             Column(
-                modifier = Modifier.padding(p),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .padding(p),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
@@ -584,7 +592,6 @@ private fun HighScoreItem(
 
     OutlinedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.background),
         modifier = modifier
     ) {
         ListItem(
