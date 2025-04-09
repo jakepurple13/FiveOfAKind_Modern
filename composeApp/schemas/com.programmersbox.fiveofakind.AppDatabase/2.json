@@ -1,0 +1,157 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "248a6f7be2064fde5b3edfd0b11aaeb7",
+    "entities": [
+      {
+        "tableName": "YahtzeeScoreItem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `ones` INTEGER NOT NULL, `twos` INTEGER NOT NULL, `threes` INTEGER NOT NULL, `fours` INTEGER NOT NULL, `fives` INTEGER NOT NULL, `sixes` INTEGER NOT NULL, `threeKind` INTEGER NOT NULL, `fourKind` INTEGER NOT NULL, `fullHouse` INTEGER NOT NULL, `smallStraight` INTEGER NOT NULL, `largeStraight` INTEGER NOT NULL, `yahtzee` INTEGER NOT NULL, `chance` INTEGER NOT NULL, `smallScore` INTEGER NOT NULL, `largeScore` INTEGER NOT NULL, `totalScore` INTEGER NOT NULL, PRIMARY KEY(`time`))",
+        "fields": [
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ones",
+            "columnName": "ones",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "twos",
+            "columnName": "twos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "threes",
+            "columnName": "threes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fours",
+            "columnName": "fours",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fives",
+            "columnName": "fives",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sixes",
+            "columnName": "sixes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "threeKind",
+            "columnName": "threeKind",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fourKind",
+            "columnName": "fourKind",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fullHouse",
+            "columnName": "fullHouse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "smallStraight",
+            "columnName": "smallStraight",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "largeStraight",
+            "columnName": "largeStraight",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "yahtzee",
+            "columnName": "yahtzee",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chance",
+            "columnName": "chance",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "smallScore",
+            "columnName": "smallScore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "largeScore",
+            "columnName": "largeScore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalScore",
+            "columnName": "totalScore",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "time"
+          ]
+        }
+      },
+      {
+        "tableName": "YahtzeeScoreStat",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`handType` TEXT NOT NULL, `numberOfTimes` INTEGER NOT NULL, `totalPoints` INTEGER NOT NULL, PRIMARY KEY(`handType`))",
+        "fields": [
+          {
+            "fieldPath": "handType",
+            "columnName": "handType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "numberOfTimes",
+            "columnName": "numberOfTimes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalPoints",
+            "columnName": "totalPoints",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "handType"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '248a6f7be2064fde5b3edfd0b11aaeb7')"
+    ]
+  }
+}
