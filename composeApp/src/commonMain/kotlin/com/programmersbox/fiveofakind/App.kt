@@ -218,6 +218,12 @@ internal fun YahtzeeScreen(
                 }
 
                 Text("Total Score: ${animateIntAsState(vm.scores.totalScore).value}")
+
+                Text(
+                    getPlatform().name,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                )
             }
         }
     }
