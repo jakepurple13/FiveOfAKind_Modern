@@ -1,5 +1,8 @@
 package com.programmersbox.fiveofakind
 
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -23,4 +26,19 @@ actual class YahtzeeDatabase {
     actual suspend fun addHighScore(scoreItem: ActualYahtzeeScoreItem) {}
     actual suspend fun removeHighScore(scoreItem: ActualYahtzeeScoreItem) {}
     actual fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>> = emptyFlow()
+}
+
+@Composable
+actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme {
+    return if (isDarkMode) darkColorScheme() else lightColorScheme()
+}
+
+@Composable
+actual fun rememberIsAmoled(): MutableState<Boolean> {
+    return mutableStateOf(false)
+}
+
+@Composable
+actual fun rememberThemeColor(): MutableState<ThemeColor> {
+    return mutableStateOf(ThemeColor.Dynamic)
 }

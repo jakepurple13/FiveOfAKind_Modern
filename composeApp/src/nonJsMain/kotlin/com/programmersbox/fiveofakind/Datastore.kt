@@ -1,18 +1,12 @@
 package com.programmersbox.fiveofakind
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import okio.Path.Companion.toPath
@@ -76,3 +70,53 @@ fun <T> rememberPreference(
         }
     }
 }
+
+@Composable
+fun <T, R> rememberPreference(
+    key: Preferences.Key<T>,
+    mapToType: (T) -> R?,
+    mapToKey: (R) -> T,
+    defaultValue: R,
+): MutableState<R> {
+    val coroutineScope = rememberCoroutineScope()
+    val state by remember(::dataStore.isInitialized) {
+        if (::dataStore.isInitialized) {
+            dataStore
+                .data
+                .mapNotNull { it[key]?.let(mapToType) ?: defaultValue }
+                .distinctUntilChanged()
+        } else {
+            flowOf(defaultValue)
+        }
+    }.collectAsStateWithLifecycle(defaultValue)
+
+    return remember(state) {
+        object : MutableState<R> {
+            override var value: R
+                get() = state
+                set(value) {
+                    println(value)
+                    coroutineScope.launch {
+                        dataStore.edit { it[key] = value.let(mapToKey) }
+                    }
+                }
+
+            override fun component1() = value
+            override fun component2(): (R) -> Unit = { value = it }
+        }
+    }
+}
+
+@Composable
+actual fun rememberThemeColor(): MutableState<ThemeColor> = rememberPreference(
+    key = stringPreferencesKey("theme_color"),
+    mapToKey = { it.name },
+    mapToType = { runCatching { ThemeColor.valueOf(it) }.getOrDefault(ThemeColor.Dynamic) },
+    defaultValue = ThemeColor.Dynamic,
+)
+
+@Composable
+actual fun rememberIsAmoled() = rememberPreference(
+    key = booleanPreferencesKey("is_amoled"),
+    defaultValue = false,
+)

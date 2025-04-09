@@ -1,32 +1,32 @@
 package com.programmersbox.fiveofakind
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.materialkolor.ktx.from
+import com.materialkolor.palettes.TonalPalette
+import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import kotlinx.datetime.format.MonthNames
@@ -40,7 +40,7 @@ fun App(
     database: YahtzeeDatabase
 ) {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+        colorScheme = buildColorScheme(isSystemInDarkTheme())
     ) {
         YahtzeeScreen(
             database = database
@@ -122,6 +122,8 @@ internal fun YahtzeeScreen(
                         verticalArrangement = Arrangement.spacedBy(2.dp),
                         contentPadding = p
                     ) {
+                        ThemeChange()
+
                         items(highScores) {
                             HighScoreItem(
                                 item = it,
@@ -682,4 +684,191 @@ private fun StatRow(type: String, stat: ActualYahtzeeScoreStat?) {
             }
         }
     )
+}
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+private fun LazyListScope.ThemeChange() = item {
+    var showThemes by remember { mutableStateOf(false) }
+    var themeColor by rememberThemeColor()
+    var isAmoled by rememberIsAmoled()
+
+    if (showThemes) {
+        ModalBottomSheet(
+            onDismissRequest = { showThemes = false },
+            containerColor = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp)
+            ) {
+                Card(
+                    onClick = { isAmoled = !isAmoled },
+                    shape = MaterialTheme.shapes.extraLarge,
+                ) {
+                    ListItem(
+                        headlineContent = { Text("Is Amoled") },
+                        trailingContent = {
+                            Switch(
+                                checked = isAmoled,
+                                onCheckedChange = { isAmoled = it }
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                        )
+                    )
+                }
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    ThemeColor
+                        .entries
+                        .filter { it != ThemeColor.Custom }
+                        .forEach {
+                            ThemeItem(
+                                onClick = { themeColor = it },
+                                selected = themeColor == it,
+                                themeColor = it,
+                                colorScheme = if (it == ThemeColor.Dynamic)
+                                    MaterialTheme.colorScheme
+                                else
+                                    rememberDynamicColorScheme(
+                                        seedColor = it.seedColor,
+                                        isAmoled = isAmoled,
+                                        isDark = isSystemInDarkTheme()
+                                    )
+                            )
+                        }
+                }
+            }
+        }
+    }
+
+    OutlinedCard(
+        onClick = { showThemes = !showThemes },
+        shape = MaterialTheme.shapes.extraLarge,
+    ) {
+        ListItem(
+            headlineContent = { Text("Theme") },
+            supportingContent = { Text(themeColor.name) },
+        )
+    }
+}
+
+@Composable
+private fun ThemeItem(
+    onClick: () -> Unit,
+    selected: Boolean,
+    themeColor: ThemeColor,
+    colorScheme: ColorScheme,
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.inverseOnSurface,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            SelectableMiniPalette(
+                selected = selected,
+                colorScheme = colorScheme
+            )
+
+            Text(themeColor.name)
+        }
+    }
+}
+
+@Composable
+private fun SelectableMiniPalette(
+    modifier: Modifier = Modifier,
+    selected: Boolean,
+    onClick: (() -> Unit)? = null,
+    colorScheme: ColorScheme,
+) {
+    SelectableMiniPalette(
+        modifier = modifier,
+        selected = selected,
+        onClick = onClick,
+        accents = remember(colorScheme) {
+            listOf(
+                TonalPalette.from(colorScheme.primary),
+                TonalPalette.from(colorScheme.secondary),
+                TonalPalette.from(colorScheme.tertiary)
+            )
+        }
+    )
+}
+
+@Composable
+private fun SelectableMiniPalette(
+    modifier: Modifier = Modifier,
+    selected: Boolean,
+    onClick: (() -> Unit)? = null,
+    accents: List<TonalPalette>,
+) {
+    val content: @Composable () -> Unit = {
+        Box {
+            Surface(
+                modifier = Modifier
+                    .size(50.dp)
+                    .offset((-25).dp, 25.dp),
+                color = Color(accents[1].tone(85)),
+            ) {}
+            Surface(
+                modifier = Modifier
+                    .size(50.dp)
+                    .offset(25.dp, 25.dp),
+                color = Color(accents[2].tone(75)),
+            ) {}
+            val animationSpec = spring<Float>(stiffness = Spring.StiffnessMedium)
+            AnimatedVisibility(
+                visible = selected,
+                enter = scaleIn(animationSpec) + fadeIn(animationSpec),
+                exit = scaleOut(animationSpec) + fadeOut(animationSpec),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Check,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(16.dp),
+                        tint = MaterialTheme.colorScheme.surface
+                    )
+                }
+            }
+        }
+    }
+    onClick?.let {
+        Surface(
+            onClick = onClick,
+            modifier = modifier
+                .padding(12.dp)
+                .size(50.dp),
+            shape = CircleShape,
+            color = Color(accents[0].tone(60)),
+        ) { content() }
+    } ?: Surface(
+        modifier = modifier
+            .padding(12.dp)
+            .size(50.dp),
+        shape = CircleShape,
+        color = Color(accents[0].tone(60)),
+    ) { content() }
 }
