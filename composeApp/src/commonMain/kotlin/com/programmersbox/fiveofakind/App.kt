@@ -57,8 +57,8 @@ internal val Alizarin = Color(0xFFe74c3c)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun YahtzeeScreen(
-    vm: YahtzeeViewModel = viewModel(),
-    database: YahtzeeDatabase
+    vm: YahtzeeViewModel = viewModel { YahtzeeViewModel() },
+    database: YahtzeeDatabase,
 ) {
     var diceLook by rememberShowDotsOnDice()
     var isUsing24HourTime by rememberUse24HourTime()

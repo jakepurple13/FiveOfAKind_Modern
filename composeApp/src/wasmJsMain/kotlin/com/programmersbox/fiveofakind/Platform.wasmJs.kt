@@ -1,12 +1,12 @@
 package com.programmersbox.fiveofakind
 
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -35,7 +35,11 @@ actual class YahtzeeDatabase {
 
 @Composable
 actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme {
-    return if (isDarkMode) darkColorScheme() else lightColorScheme()
+    return rememberDynamicColorScheme(
+        Color.Blue,
+        isDark = isDarkMode,
+        isAmoled = false
+    )
 }
 
 @Composable
