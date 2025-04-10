@@ -27,18 +27,6 @@ class Settings(
 }
 
 @Composable
-actual fun rememberShowDotsOnDice() = rememberPreference(
-    booleanPreferencesKey("showDiceOnDots"),
-    true
-)
-
-@Composable
-actual fun rememberUse24HourTime() = rememberPreference(
-    booleanPreferencesKey("use24HourTime"),
-    true
-)
-
-@Composable
 fun <T> rememberPreference(
     key: Preferences.Key<T>,
     defaultValue: T,
@@ -105,6 +93,18 @@ fun <T, R> rememberPreference(
         }
     }
 }
+
+@Composable
+actual fun rememberShowDotsOnDice() = rememberPreference(
+    booleanPreferencesKey("showDiceOnDots"),
+    true
+)
+
+@Composable
+actual fun rememberUse24HourTime() = rememberPreference(
+    booleanPreferencesKey("use24HourTime"),
+    true
+)
 
 @Composable
 actual fun rememberThemeColor(): MutableState<ThemeColor> = rememberPreference(

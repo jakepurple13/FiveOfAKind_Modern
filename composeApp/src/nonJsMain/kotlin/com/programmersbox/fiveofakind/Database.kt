@@ -67,8 +67,9 @@ actual class YahtzeeDatabase(
         .getYahtzeeStats()
         .map { stats ->
             stats.mapNotNull {
-                val handType = runCatching { HandType.valueOf(it.handType).displayName }
+                val handType = runCatching { HandType.valueOf(it.handType) }
                     .getOrNull()
+                    ?.displayName
                     ?: return@mapNotNull null
 
                 ActualYahtzeeScoreStat(

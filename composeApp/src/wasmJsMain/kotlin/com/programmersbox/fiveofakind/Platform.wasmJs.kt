@@ -4,7 +4,6 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.flow.Flow
@@ -15,16 +14,6 @@ class WasmPlatform: Platform {
 }
 
 actual fun getPlatform(): Platform = WasmPlatform()
-
-@Composable
-actual fun rememberShowDotsOnDice(): MutableState<Boolean> = remember {
-    mutableStateOf(false)
-}
-
-@Composable
-actual fun rememberUse24HourTime(): MutableState<Boolean> = remember {
-    mutableStateOf(false)
-}
 
 actual class YahtzeeDatabase {
     actual fun getHighScores(): Flow<List<ActualYahtzeeScoreItem>> = emptyFlow()
@@ -42,16 +31,22 @@ actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorSc
     )
 }
 
-@Composable
-actual fun rememberIsAmoled(): MutableState<Boolean> {
-    return remember {
-        mutableStateOf(false)
-    }
-}
+private val showDotsOnDice = mutableStateOf(false)
 
 @Composable
-actual fun rememberThemeColor(): MutableState<ThemeColor> {
-    return remember {
-        mutableStateOf(ThemeColor.Dynamic)
-    }
-}
+actual fun rememberShowDotsOnDice(): MutableState<Boolean> = showDotsOnDice
+
+private val use24HourTime = mutableStateOf(false)
+
+@Composable
+actual fun rememberUse24HourTime(): MutableState<Boolean> = use24HourTime
+
+private val isAmoled = mutableStateOf(false)
+
+@Composable
+actual fun rememberIsAmoled(): MutableState<Boolean> = isAmoled
+
+private val themeColor = mutableStateOf(ThemeColor.Dynamic)
+
+@Composable
+actual fun rememberThemeColor(): MutableState<ThemeColor> = themeColor
