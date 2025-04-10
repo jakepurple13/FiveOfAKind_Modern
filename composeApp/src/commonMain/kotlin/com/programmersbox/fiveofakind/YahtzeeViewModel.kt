@@ -55,83 +55,35 @@ internal class YahtzeeViewModel : ViewModel() {
         }
     }
 
-    fun placeOnes() {
+    // Consolidated method for placing small scores (ones through sixes)
+    private fun placeSmallScore(handType: HandType) {
         if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getSmall(hand, HandType.Ones)
+        scores.getSmall(hand, handType)
         reset()
     }
 
-    fun placeTwos() {
+    // Individual methods that call the consolidated method
+    fun placeOnes() = placeSmallScore(HandType.Ones)
+    fun placeTwos() = placeSmallScore(HandType.Twos)
+    fun placeThrees() = placeSmallScore(HandType.Threes)
+    fun placeFours() = placeSmallScore(HandType.Fours)
+    fun placeFives() = placeSmallScore(HandType.Fives)
+    fun placeSixes() = placeSmallScore(HandType.Sixes)
+
+    // Helper method to place a score based on hand type
+    private fun placeLargeScore(action: (Collection<Dice>) -> Int) {
         if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getSmall(hand, HandType.Twos)
+        action(hand)
         reset()
     }
 
-    fun placeThrees() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getSmall(hand, HandType.Threes)
-        reset()
-    }
-
-    fun placeFours() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getSmall(hand, HandType.Fours)
-        reset()
-    }
-
-    fun placeFives() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getSmall(hand, HandType.Fives)
-        reset()
-    }
-
-    fun placeSixes() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getSmall(hand, HandType.Sixes)
-        reset()
-    }
-
-    fun placeThreeOfKind() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getThreeOfAKind(hand)
-        reset()
-    }
-
-    fun placeFourOfKind() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getFourOfAKind(hand)
-        reset()
-    }
-
-    fun placeFullHouse() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getFullHouse(hand)
-        reset()
-    }
-
-    fun placeSmallStraight() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getSmallStraight(hand)
-        reset()
-    }
-
-    fun placeLargeStraight() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getLargeStraight(hand)
-        reset()
-    }
-
-    fun placeYahtzee() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getYahtzee(hand)
-        reset()
-    }
-
-    fun placeChance() {
-        if (hand.all { it.value == 0 } && IS_NOT_DEBUG) return
-        scores.getChance(hand)
-        reset()
-    }
+    fun placeThreeOfKind() = placeLargeScore(scores::getThreeOfAKind)
+    fun placeFourOfKind() = placeLargeScore(scores::getFourOfAKind)
+    fun placeFullHouse() = placeLargeScore(scores::getFullHouse)
+    fun placeSmallStraight() = placeLargeScore(scores::getSmallStraight)
+    fun placeLargeStraight() = placeLargeScore(scores::getLargeStraight)
+    fun placeYahtzee() = placeLargeScore(scores::getYahtzee)
+    fun placeChance() = placeLargeScore(scores::getChance)
 
     private fun reset() {
         hold.clear()

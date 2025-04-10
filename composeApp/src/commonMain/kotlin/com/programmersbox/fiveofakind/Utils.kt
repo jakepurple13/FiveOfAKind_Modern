@@ -10,11 +10,12 @@ internal suspend fun randomNumberAnimation(
     newValue: Int,
     valueChange: (Int) -> Unit,
     delayAmountMs: Long = 50L,
-    randomCount: Int = 5
+    randomCount: Int = 5,
+    range: IntRange = 1..6,
 ) {
     repeat(randomCount) {
         delay(delayAmountMs)
-        valueChange(Random.nextInt(1..6))
+        valueChange(Random.nextInt(range))
     }
     valueChange(newValue)
 }
@@ -42,11 +43,12 @@ internal fun randomNumberAnimation(
     newValue: Int,
     randomCount: Int = 5,
     delayAmountMs: Long = 50L,
-    vararg keys: Any
+    range: IntRange = 1..6,
+    vararg keys: Any,
 ) = randomItemAnimation(
     initialValue = initialValue,
     newValue = { newValue },
-    randomValue = { Random.nextInt(1..6) },
+    randomValue = { Random.nextInt(range) },
     randomCount = randomCount,
     delayAmountMs = delayAmountMs,
     keys = keys

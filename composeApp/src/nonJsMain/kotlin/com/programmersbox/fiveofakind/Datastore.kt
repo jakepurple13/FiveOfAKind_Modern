@@ -95,7 +95,6 @@ fun <T, R> rememberPreference(
             override var value: R
                 get() = state
                 set(value) {
-                    println(value)
                     coroutineScope.launch {
                         dataStore.edit { it[key] = value.let(mapToKey) }
                     }

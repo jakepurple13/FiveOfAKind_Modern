@@ -133,9 +133,7 @@ interface YahtzeeDao {
         val scores = yahtzeeHighScores()
         if (scores.size > HIGHSCORE_LIMIT) {
             scores
-                .chunked(HIGHSCORE_LIMIT)
-                .drop(1)
-                .flatten()
+                .drop(HIGHSCORE_LIMIT)
                 .forEach { removeHighScore(it.time) }
         }
         updateScores(scoreItem)

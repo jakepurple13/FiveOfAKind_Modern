@@ -149,13 +149,15 @@ internal fun YahtzeeScreen(
                 TopAppBar(
                     title = { Text("Yahtzee") },
                     actions = {
-                        /*TextButton(
-                            onClick = {
-                                HandType.entries.forEach {
-                                    vm.scores.scoreList[it] = 10
+                        if (!IS_NOT_DEBUG) {
+                            TextButton(
+                                onClick = {
+                                    HandType.entries.forEach {
+                                        vm.scores.scoreList[it] = 10
+                                    }
                                 }
-                            }
-                        ) { Text("Finish") }*/
+                            ) { Text("Finish") }
+                        }
                         TextButton(onClick = { newGameDialog = true }) { Text("New Game") }
                         TextButton(
                             onClick = { isUsing24HourTime = !isUsing24HourTime },
@@ -294,7 +296,7 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
         IconButton(
             onClick = vm::reroll,
             //TODO: && !vm.rolling fixes the double tap feature
-            enabled = vm.state != YahtzeeState.Stop,
+            enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
             modifier = Modifier.weight(1f),
         ) {
             Icon(
@@ -669,34 +671,7 @@ private fun BottomSheetContent(
                 }
             )
         }
-        /*item { StatRow("Ones", scores.ones) }
-        item { StatRow("Twos", scores.twos) }
-        item { StatRow("Threes", scores.threes) }
-        item { StatRow("Fours", scores.fours) }
-        item { StatRow("Fives", scores.fives) }
-        item { StatRow("Sixes", scores.sixes) }
-
-        item { StatRow("Three of a Kind", scores.threeKind) }
-        item { StatRow("Four of a Kind", scores.fourKind) }
-        item { StatRow("Full House", scores.fullHouse) }
-        item { StatRow("Small Straight", scores.smallStraight) }
-        item { StatRow("Large Straight", scores.largeStraight) }
-        item { StatRow("Yahtzee", scores.yahtzee) }
-        item { StatRow("Chance", scores.chance) }*/
     }
-}
-
-@Composable
-private fun StatRow(type: String, stat: ActualYahtzeeScoreStat?) {
-    ListItem(
-        headlineContent = { Text(type) },
-        supportingContent = {
-            Column {
-                Text("Times Counted: ${stat?.numberOfTimes}")
-                Text("Total Points: ${stat?.totalPoints}")
-            }
-        }
-    )
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)

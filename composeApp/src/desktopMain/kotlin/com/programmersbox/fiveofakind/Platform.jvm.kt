@@ -6,15 +6,16 @@ import androidx.compose.ui.graphics.Color
 import com.materialkolor.rememberDynamicColorScheme
 
 class JVMPlatform: Platform {
-    override val name: String = "Java ${System.getProperty("java.version")}"
+    override val name: String = "Desktop Java ${System.getProperty("java.version")}"
 }
 
 actual fun getPlatform(): Platform = JVMPlatform()
 
 @Composable
 actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme {
+    // Since dynamicColor is not used in JVM implementation, we can simplify this
     return rememberDynamicColorScheme(
-        Color.Blue,
+        seedColor = Color.Blue,
         isDark = isDarkMode,
         isAmoled = false
     )

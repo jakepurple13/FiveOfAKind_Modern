@@ -26,7 +26,7 @@ fun main() = application {
 }
 
 fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
-    val dbFile = File(System.getProperty("java.io.tmpdir"), "my_room.db")
+    val dbFile = File(System.getProperty("java.io.tmpdir"), "yahtzee_database.db")
     return Room.databaseBuilder<AppDatabase>(
         name = dbFile.absolutePath,
     ).setDriver(BundledSQLiteDriver())

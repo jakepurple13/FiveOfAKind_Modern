@@ -17,43 +17,22 @@ internal enum class HandType(val isSmall: Boolean) {
     FullHouse(false),
     SmallStraight(false),
     LargeStraight(false),
-    Yahtzee(false) {
-//        override fun canGet(dice: Collection<Dice>): Boolean {
-//            return 5 in dice.groupingBy { it.value }.eachCount().values
-//        }
-//
-//        override fun get(dice: Collection<Dice>): Int {
-//
-//        }
-    },
-    Chance(false) {
-        //override fun canGet(dice: Collection<Dice>): Boolean = true
-        //override fun get(dice: Collection<Dice>): Int = dice.sumOf { it.value }
-    };
-
-    //abstract fun canGet(dice: Collection<Dice>): Boolean
-    //abstract operator fun get(dice: Collection<Dice>): Int
-
-    /*private fun longestSequence(a: Array<Dice>): Int {
-        //Arrays.sort(a, compareBy { it.value })
-        var longest = 0
-        var sequence = 0
-        for (i in 1 until a.size) {
-            when (a[i].value - a[i - 1].value) {
-                0 -> Unit*//*ignore duplicates*//*
-                1 -> sequence += 1
-                else -> if (sequence > longest) {
-                    longest = sequence
-                    sequence = 0
-                }
-            }
-        }
-        return max(longest, sequence)
-    }*/
+    Yahtzee(false),
+    Chance(false);
 }
 
 internal class YahtzeeScores {
     val scoreList = mutableStateMapOf<HandType, Int>()
+
+    // Helper method to calculate and cache dice value counts
+    private fun getDiceValueCounts(dice: Collection<Dice>): Map<Int, Int> {
+        return dice.groupingBy { it.value }.eachCount()
+    }
+
+    // Helper method to get the counts of each dice value occurrence
+    private fun getValueOccurrences(dice: Collection<Dice>): Collection<Int> {
+        return getDiceValueCounts(dice).values
+    }
 
     val smallScore by derivedStateOf {
         scoreList

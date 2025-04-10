@@ -2,20 +2,9 @@ package com.programmersbox.fiveofakind
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,6 +37,7 @@ internal class Dice(value: Int = Random.nextInt(1..6), @Suppress("unused") val l
         onClick: () -> Unit = {},
     ) = if (useDots) DiceDots(this, modifier, onClick) else Dice(this, modifier, onClick)
 
+    // Operator function as a shorthand for ShowDice
     @Composable
     operator fun invoke(
         useDots: Boolean,
@@ -149,19 +139,22 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
             }
 
             6 -> {
+                // Use Canvas for more efficient rendering of 6 dots
                 val fontSize = LocalTextStyle.current.fontSize
                 val fontColor = LocalContentColor.current
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val spaceBetweenWidthDots = size.width / 3
                     val spaceBetweenHeightDots = size.height / 4
-                    repeat(6) {
+                    val radius = fontSize.toPx() / 4
+
+                    // Draw all 6 dots in a single pass
+                    for (i in 0 until 6) {
+                        val x = spaceBetweenWidthDots * (i % 2 + 1)
+                        val y = spaceBetweenHeightDots * (i / 2 + 1)
                         drawCircle(
                             color = fontColor,
-                            radius = fontSize.toPx() / 4,
-                            center = Offset(
-                                spaceBetweenWidthDots * (it % 2 + 1),
-                                spaceBetweenHeightDots * (it % 3 + 1)
-                            )
+                            radius = radius,
+                            center = Offset(x, y)
                         )
                     }
                 }
