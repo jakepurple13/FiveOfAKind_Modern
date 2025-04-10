@@ -68,7 +68,8 @@ actual class YahtzeeDatabase(
         .map { stats ->
             stats.map {
                 ActualYahtzeeScoreStat(
-                    handType = it.handType,
+                    handType = runCatching { HandType.valueOf(it.handType).displayName }
+                        .getOrDefault(it.handType),
                     numberOfTimes = it.numberOfTimes,
                     totalPoints = it.totalPoints,
                 )
@@ -159,7 +160,7 @@ interface YahtzeeDao {
             HandType.FiveOfAKind to yahtzeeScoreItem::yahtzee,
         )
 
-        for(i in list) {
+        for (i in list) {
             if (i.value.get() == 0) continue
 
             val newStat = stats

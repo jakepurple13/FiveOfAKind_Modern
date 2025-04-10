@@ -5,20 +5,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import kotlin.math.max
 
-internal enum class HandType(val isSmall: Boolean) {
-    Ones(true),
-    Twos(true),
-    Threes(true),
-    Fours(true),
-    Fives(true),
-    Sixes(true),
-    ThreeOfAKind(false),
-    FourOfAKind(false),
-    FullHouse(false),
-    SmallStraight(false),
-    LargeStraight(false),
-    FiveOfAKind(false),
-    Chance(false);
+internal enum class HandType(val isSmall: Boolean, val displayName: String) {
+    Ones(true, "Ones"),
+    Twos(true, "Twos"),
+    Threes(true, "Threes"),
+    Fours(true, "Fours"),
+    Fives(true, "Fives"),
+    Sixes(true, "Sixes"),
+    ThreeOfAKind(false, "Three of a Kind"),
+    FourOfAKind(false, "Four of a Kind"),
+    FullHouse(false, "Full House"),
+    SmallStraight(false, "Small Straight"),
+    LargeStraight(false, "Large Straight"),
+    FiveOfAKind(false, "Five of a Kind"),
+    Chance(false, "Chance")
+    ;
 }
 
 internal class YahtzeeScores {
