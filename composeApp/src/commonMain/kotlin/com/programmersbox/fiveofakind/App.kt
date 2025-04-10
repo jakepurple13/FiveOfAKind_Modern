@@ -538,7 +538,7 @@ internal fun ScoreButton(
         onClick = onClick,
         enabled = enabled,
         border = BorderStroke(
-            width = ButtonDefaults.outlinedButtonBorder.width,
+            width = ButtonDefaults.outlinedButtonBorder().width,
             color = animateColorAsState(
                 when {
                     canScore && enabled -> customBorderColor
