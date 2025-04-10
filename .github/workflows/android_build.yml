@@ -49,7 +49,7 @@ jobs:
         name: Sign app APK
         id: fiveofakind_sign
         with:
-          releaseDirectory: android/build/outputs/bundle/release/
+          releaseDirectory: composeApp/build/outputs/bundle/release/
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -97,7 +97,7 @@ jobs:
         name: Sign app APK
         id: fiveofakind_apk_sign
         with:
-          releaseDirectory: android/build/outputs/apk/release/
+          releaseDirectory: composeApp/build/outputs/apk/release/
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}

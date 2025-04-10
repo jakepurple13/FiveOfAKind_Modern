@@ -147,7 +147,7 @@ internal fun YahtzeeScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Yahtzee") },
+                    title = { Text("Five Dice") },
                     actions = {
                         if (!IS_NOT_DEBUG) {
                             TextButton(
@@ -167,10 +167,11 @@ internal fun YahtzeeScreen(
                             }
                         }
                         Spacer(Modifier.width(12.dp))
-                        Dice(1, "")
-                            .ShowDice(diceLook, Modifier.size(40.dp)) {
-                                diceLook = !diceLook
-                            }
+                        Dice(1, "").ShowDice(
+                            useDots = diceLook,
+                            onClick = { diceLook = !diceLook },
+                            modifier = Modifier.size(40.dp)
+                        )
                     }
                 )
             },
@@ -212,7 +213,7 @@ internal fun YahtzeeScreen(
                                 HandType.FullHouse -> vm.scores.canGetFullHouse(vm.hand)
                                 HandType.SmallStraight -> vm.scores.canGetSmallStraight(vm.hand)
                                 HandType.LargeStraight -> vm.scores.canGetLargeStraight(vm.hand)
-                                HandType.Yahtzee -> vm.scores.canGetYahtzee(vm.hand)
+                                HandType.FiveOfAKind -> vm.scores.canGetYahtzee(vm.hand)
                                 else -> false
                             }
                         },
@@ -253,7 +254,7 @@ internal fun YahtzeeScreen(
                     fullHouse = vm.scores.scoreList.getOrElse(HandType.FullHouse) { 0 },
                     smallStraight = vm.scores.scoreList.getOrElse(HandType.SmallStraight) { 0 },
                     largeStraight = vm.scores.scoreList.getOrElse(HandType.LargeStraight) { 0 },
-                    yahtzee = vm.scores.scoreList.getOrElse(HandType.Yahtzee) { 0 },
+                    yahtzee = vm.scores.scoreList.getOrElse(HandType.FiveOfAKind) { 0 },
                     chance = vm.scores.scoreList.getOrElse(HandType.Chance) { 0 },
                 )
             )
@@ -488,12 +489,12 @@ internal fun LargeScores(
         )
 
         ScoreButton(
-            category = "Yahtzee",
-            enabled = !containsCheck(HandType.Yahtzee) ||
-                    canGetHand(HandType.Yahtzee) &&
+            category = "Five of a Kind",
+            enabled = !containsCheck(HandType.FiveOfAKind) ||
+                    canGetHand(HandType.FiveOfAKind) &&
                     hand.none { it.value == 0 },
-            score = scoreGet(HandType.Yahtzee),
-            canScore = canGetHand(HandType.Yahtzee) && isNotRollOneState && !isRolling,
+            score = scoreGet(HandType.FiveOfAKind),
+            canScore = canGetHand(HandType.FiveOfAKind) && isNotRollOneState && !isRolling,
             onClick = onYahtzeeClick
         )
 

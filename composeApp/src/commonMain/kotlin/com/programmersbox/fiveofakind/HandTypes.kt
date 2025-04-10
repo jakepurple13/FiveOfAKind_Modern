@@ -17,7 +17,7 @@ internal enum class HandType(val isSmall: Boolean) {
     FullHouse(false),
     SmallStraight(false),
     LargeStraight(false),
-    Yahtzee(false),
+    FiveOfAKind(false),
     Chance(false);
 }
 
@@ -59,7 +59,7 @@ internal class YahtzeeScores {
     private val placedFullHouse by derivedStateOf { scoreList.containsKey(HandType.FullHouse) }
     private val placedSmallStraight by derivedStateOf { scoreList.containsKey(HandType.SmallStraight) }
     private val placedLargeStraight by derivedStateOf { scoreList.containsKey(HandType.LargeStraight) }
-    private val placedYahtzee by derivedStateOf { scoreList.containsKey(HandType.Yahtzee) }
+    private val placedFiveOfAKind by derivedStateOf { scoreList.containsKey(HandType.FiveOfAKind) }
     private val placedChance by derivedStateOf { scoreList.containsKey(HandType.Chance) }
 
     private val placedOnes by derivedStateOf { scoreList.containsKey(HandType.Ones) }
@@ -70,7 +70,7 @@ internal class YahtzeeScores {
     private val placedSixes by derivedStateOf { scoreList.containsKey(HandType.Sixes) }
 
     val isGameOver by derivedStateOf {
-        placedYahtzee && placedChance &&
+        placedFiveOfAKind && placedChance &&
                 placedLargeStraight && placedSmallStraight &&
                 placedFullHouse &&
                 placedFourOfKind && placedThreeOfKind &&
@@ -113,10 +113,10 @@ internal class YahtzeeScores {
 
     fun getYahtzee(dice: Collection<Dice>): Int {
         val num = if (canGetYahtzee(dice)) {
-            if (scoreList.containsKey(HandType.Yahtzee)) 100 else 50
+            if (scoreList.containsKey(HandType.FiveOfAKind)) 100 else 50
         } else 0
         return num.apply {
-            scoreList[HandType.Yahtzee] = scoreList.getOrElse(HandType.Yahtzee) { 0 } + this
+            scoreList[HandType.FiveOfAKind] = scoreList.getOrElse(HandType.FiveOfAKind) { 0 } + this
         }
     }
 
