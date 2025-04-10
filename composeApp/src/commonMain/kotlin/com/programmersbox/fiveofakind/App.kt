@@ -593,7 +593,7 @@ private fun HighScoreItem(
 
     var showMore by remember(scaffoldState.targetValue) { mutableStateOf(false) }
 
-    OutlinedCard(
+    ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         modifier = modifier
     ) {
@@ -607,6 +607,9 @@ private fun HighScoreItem(
                     modifier = Modifier.rotate(animateFloatAsState(targetValue = if (showMore) 180f else 0f).value)
                 ) { Icon(Icons.Default.ArrowDropDown, null) }
             },
+            colors = ListItemDefaults.colors(
+                containerColor = Color.Transparent
+            )
         )
         AnimatedVisibility(visible = showMore) {
             HorizontalDivider()
