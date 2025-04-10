@@ -116,7 +116,7 @@ android {
         applicationId = "com.programmersbox.fiveofakind"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
+        versionCode = createVersionCode()
         versionName = "1.0"
     }
     packaging {
@@ -133,6 +133,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
+
+fun createVersionCode(): Int {
+    return if (System.getenv("CI") != null) {
+        runCatching { System.getenv("GITHUB_RUN_NUMBER").toInt() }
+            .getOrNull()
+    } else {
+        null
+    } ?: 1
 }
 
 dependencies {
