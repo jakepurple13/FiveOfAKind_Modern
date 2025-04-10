@@ -66,10 +66,13 @@ actual class YahtzeeDatabase(
     actual fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>> = dao
         .getYahtzeeStats()
         .map { stats ->
-            stats.map {
+            stats.mapNotNull {
+                val handType = runCatching { HandType.valueOf(it.handType).displayName }
+                    .getOrNull()
+                    ?: return@mapNotNull null
+
                 ActualYahtzeeScoreStat(
-                    handType = runCatching { HandType.valueOf(it.handType).displayName }
-                        .getOrDefault(it.handType),
+                    handType = handType,
                     numberOfTimes = it.numberOfTimes,
                     totalPoints = it.totalPoints,
                 )
