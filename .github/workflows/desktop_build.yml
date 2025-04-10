@@ -68,9 +68,9 @@ jobs:
         with:
           name: ${{ matrix.os }}-build
           path: |
-            desktop/build/compose/binaries/main/dmg/*.dmg
-            desktop/build/compose/binaries/main/deb/*.deb
-            desktop/build/compose/binaries/main/msi/*.msi
+            composeApp/build/compose/binaries/main/dmg/*.dmg
+            composeApp/build/compose/binaries/main/deb/*.deb
+            composeApp/build/compose/binaries/main/msi/*.msi
 
   #      - name: Gradle Build
   #        id: gradle-build
