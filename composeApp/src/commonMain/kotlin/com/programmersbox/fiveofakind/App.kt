@@ -105,7 +105,9 @@ internal fun YahtzeeScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                drawerContainerColor = MaterialTheme.colorScheme.surface,
+            ) {
                 Scaffold(
                     topBar = {
                         TopAppBar(
