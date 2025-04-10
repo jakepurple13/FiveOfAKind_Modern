@@ -61,7 +61,7 @@ fun <T> rememberPreference(
                 get() = state
                 set(value) {
                     coroutineScope.launch {
-                        dataStore.edit { it[key] = value }
+                        runCatching { dataStore.edit { it[key] = value } }
                     }
                 }
 
@@ -96,7 +96,7 @@ fun <T, R> rememberPreference(
                 get() = state
                 set(value) {
                     coroutineScope.launch {
-                        dataStore.edit { it[key] = value.let(mapToKey) }
+                        runCatching { dataStore.edit { it[key] = value.let(mapToKey) } }
                     }
                 }
 
