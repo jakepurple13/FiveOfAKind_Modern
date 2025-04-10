@@ -148,7 +148,7 @@ private fun CanvasDice(
     Canvas(modifier = Modifier.fillMaxSize()) {
         val spaceBetweenWidthDots = size.width / 3
         val spaceBetweenHeightDots = size.height / spaceBetweenHeightDivider
-        val radius = fontSize.toPx() / 2.5f
+        val radius = fontSize.toPx() / 4
 
         // Draw all 6 dots in a single pass
         for (i in 0 until diceValue) {
