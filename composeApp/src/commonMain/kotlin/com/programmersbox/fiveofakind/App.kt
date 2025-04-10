@@ -659,7 +659,7 @@ private fun HighScoreItem(
                     Text("Full House: ${item.fullHouse}")
                     Text("Small Straight: ${item.smallStraight}")
                     Text("Large Straight: ${item.largeStraight}")
-                    Text("Yahtzee: ${item.yahtzee}")
+                    Text("Five of a Kind: ${item.yahtzee}")
                     Text("Chance: ${item.chance}")
                     Text("Large Score: $largeScore")
                 }
