@@ -116,10 +116,10 @@ interface YahtzeeDao {
     @Query("DELETE FROM YahtzeeScoreItem WHERE time = :time")
     suspend fun removeHighScore(time: Long)
 
-    @Query("SELECT * FROM YahtzeeScoreItem ORDER BY totalScore")
+    @Query("SELECT * FROM YahtzeeScoreItem ORDER BY totalScore DESC")
     fun getYahtzeeHighScores(): Flow<List<YahtzeeScoreItem>>
 
-    @Query("SELECT * FROM YahtzeeScoreItem ORDER BY totalScore")
+    @Query("SELECT * FROM YahtzeeScoreItem ORDER BY totalScore DESC")
     suspend fun yahtzeeHighScores(): List<YahtzeeScoreItem>
 
     @Query("SELECT * FROM YahtzeeScoreStat")
