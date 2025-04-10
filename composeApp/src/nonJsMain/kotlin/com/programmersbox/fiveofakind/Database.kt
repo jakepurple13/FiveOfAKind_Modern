@@ -143,36 +143,36 @@ interface YahtzeeDao {
     suspend fun updateScores(yahtzeeScoreItem: YahtzeeScoreItem) {
         val stats = yahtzeeStats()
 
-        val list = listOf(
-            yahtzeeScoreItem::ones,
-            yahtzeeScoreItem::twos,
-            yahtzeeScoreItem::threes,
-            yahtzeeScoreItem::fours,
-            yahtzeeScoreItem::fives,
-            yahtzeeScoreItem::sixes,
-            yahtzeeScoreItem::threeKind,
-            yahtzeeScoreItem::fourKind,
-            yahtzeeScoreItem::fullHouse,
-            yahtzeeScoreItem::smallStraight,
-            yahtzeeScoreItem::largeStraight,
-            yahtzeeScoreItem::chance,
-            yahtzeeScoreItem::yahtzee,
+        val list = mapOf(
+            HandType.Ones to yahtzeeScoreItem::ones,
+            HandType.Twos to yahtzeeScoreItem::twos,
+            HandType.Threes to yahtzeeScoreItem::threes,
+            HandType.Fours to yahtzeeScoreItem::fours,
+            HandType.Fives to yahtzeeScoreItem::fives,
+            HandType.Sixes to yahtzeeScoreItem::sixes,
+            HandType.ThreeOfAKind to yahtzeeScoreItem::threeKind,
+            HandType.FourOfAKind to yahtzeeScoreItem::fourKind,
+            HandType.FullHouse to yahtzeeScoreItem::fullHouse,
+            HandType.SmallStraight to yahtzeeScoreItem::smallStraight,
+            HandType.LargeStraight to yahtzeeScoreItem::largeStraight,
+            HandType.Chance to yahtzeeScoreItem::chance,
+            HandType.FiveOfAKind to yahtzeeScoreItem::yahtzee,
         )
 
         for(i in list) {
-            if(i.get() == 0) continue
+            if (i.value.get() == 0) continue
 
             val newStat = stats
-                .find { stat -> stat.handType == i.name }
+                .find { stat -> stat.handType == i.key.name }
                 ?.let { stat ->
                     stat.copy(
                         numberOfTimes = stat.numberOfTimes + 1,
-                        totalPoints = stat.totalPoints + i.get(),
+                        totalPoints = stat.totalPoints + i.value.get(),
                     )
                 } ?: YahtzeeScoreStat(
-                handType = i.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+                handType = i.key.name,
                 numberOfTimes = 1,
-                totalPoints = i.get().toLong(),
+                totalPoints = i.value.get().toLong(),
             )
 
             addStats(newStat)
