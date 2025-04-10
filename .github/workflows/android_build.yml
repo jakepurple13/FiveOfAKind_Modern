@@ -15,10 +15,6 @@ on:
 #        required: true
 #        default: 'false'
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   aab:
     name: Generate AAB
