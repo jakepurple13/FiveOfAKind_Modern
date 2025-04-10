@@ -177,7 +177,12 @@ internal fun YahtzeeScreen(
                     }
                 )
             },
-            bottomBar = { BottomBarDiceRow(vm, diceLook) },
+            bottomBar = {
+                BottomBarDiceRow(
+                    vm = vm,
+                    diceLooks = diceLook,
+                )
+            },
         ) { p ->
             Column(
                 modifier = Modifier
@@ -280,7 +285,10 @@ internal fun YahtzeeScreen(
 
 @Composable
 internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
-    BottomAppBar {
+    val isAmoled by rememberIsAmoled()
+    BottomAppBar(
+        containerColor = if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
+    ) {
         vm.hand.forEach { dice ->
             dice(
                 useDots = diceLooks,
