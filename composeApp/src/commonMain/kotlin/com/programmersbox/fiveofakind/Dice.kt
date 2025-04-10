@@ -101,21 +101,10 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
             }
 
             4 -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Row(modifier = Modifier.weight(1f)) {
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                    }
-                    Row(modifier = Modifier.weight(1f)) {
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                    }
-                }
+                CanvasDice(
+                    diceValue = 4,
+                    spaceBetweenHeightDivider = 3
+                )
             }
 
             5 -> {
@@ -139,26 +128,37 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
             }
 
             6 -> {
-                // Use Canvas for more efficient rendering of 6 dots
-                val fontSize = LocalTextStyle.current.fontSize
-                val fontColor = LocalContentColor.current
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val spaceBetweenWidthDots = size.width / 3
-                    val spaceBetweenHeightDots = size.height / 4
-                    val radius = fontSize.toPx() / 4
-
-                    // Draw all 6 dots in a single pass
-                    for (i in 0 until 6) {
-                        val x = spaceBetweenWidthDots * (i % 2 + 1)
-                        val y = spaceBetweenHeightDots * (i / 2 + 1)
-                        drawCircle(
-                            color = fontColor,
-                            radius = radius,
-                            center = Offset(x, y)
-                        )
-                    }
-                }
+                CanvasDice(
+                    diceValue = 6,
+                    spaceBetweenHeightDivider = 4
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun CanvasDice(
+    diceValue: Int,
+    spaceBetweenHeightDivider: Int,
+) {
+    // Use Canvas for more efficient rendering of 6 dots
+    val fontSize = LocalTextStyle.current.fontSize
+    val fontColor = LocalContentColor.current
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        val spaceBetweenWidthDots = size.width / 3
+        val spaceBetweenHeightDots = size.height / spaceBetweenHeightDivider
+        val radius = fontSize.toPx() / 2.5f
+
+        // Draw all 6 dots in a single pass
+        for (i in 0 until diceValue) {
+            val x = spaceBetweenWidthDots * (i % 2 + 1)
+            val y = spaceBetweenHeightDots * (i / 2 + 1)
+            drawCircle(
+                color = fontColor,
+                radius = radius,
+                center = Offset(x, y)
+            )
         }
     }
 }
