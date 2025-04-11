@@ -17,28 +17,22 @@ class WasmPlatform : Platform {
 
 actual fun getPlatform(): Platform = WasmPlatform()
 
-private val highScoreStuff = storeOf<List<ActualYahtzeeScoreItem>>(
-    key = "highScoreStuff",
-    default = emptyList(),
-)
-
-private val statsStuff = storeOf<List<ActualYahtzeeScoreStat>>(
-    key = "statsStuff",
-    default = emptyList(),
-)
-
 actual class YahtzeeDatabase {
-
-    init {
-        for (i in 0..localStorage.length) {
-            println(localStorage.key(i) + " " + localStorage.getItem(localStorage.key(i)!!))
-        }
-    }
 
     /*actual fun getHighScores(): Flow<List<ActualYahtzeeScoreItem>> = emptyFlow()
     actual suspend fun addHighScore(scoreItem: ActualYahtzeeScoreItem) {}
     actual suspend fun removeHighScore(scoreItem: ActualYahtzeeScoreItem) {}
     actual fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>> = emptyFlow()*/
+
+    private val statsStuff = storeOf<List<ActualYahtzeeScoreStat>>(
+        key = "statsStuff",
+        default = emptyList(),
+    )
+
+    private val highScoreStuff = storeOf<List<ActualYahtzeeScoreItem>>(
+        key = "highScoreStuff",
+        default = emptyList(),
+    )
 
     actual fun getHighScores(): Flow<List<ActualYahtzeeScoreItem>> = highScoreStuff
         .updatesOrEmpty
@@ -49,6 +43,51 @@ actual class YahtzeeDatabase {
             val current = highScoreStuff.getOrEmpty().toMutableList()
             current.add(scoreItem)
             highScoreStuff.set(current.sortedByDescending { it.totalScore }.take(15))
+
+            val yahtzeeScoreItem = scoreItem
+
+            val list = mapOf(
+                HandType.Ones to yahtzeeScoreItem::ones,
+                HandType.Twos to yahtzeeScoreItem::twos,
+                HandType.Threes to yahtzeeScoreItem::threes,
+                HandType.Fours to yahtzeeScoreItem::fours,
+                HandType.Fives to yahtzeeScoreItem::fives,
+                HandType.Sixes to yahtzeeScoreItem::sixes,
+                HandType.ThreeOfAKind to yahtzeeScoreItem::threeKind,
+                HandType.FourOfAKind to yahtzeeScoreItem::fourKind,
+                HandType.FullHouse to yahtzeeScoreItem::fullHouse,
+                HandType.SmallStraight to yahtzeeScoreItem::smallStraight,
+                HandType.LargeStraight to yahtzeeScoreItem::largeStraight,
+                HandType.Chance to yahtzeeScoreItem::chance,
+                HandType.FiveOfAKind to yahtzeeScoreItem::yahtzee,
+            )
+
+            val stats = statsStuff.getOrEmpty().toMutableList()
+
+            for (i in list) {
+                if (i.value.get() == 0) continue
+
+                val newStat = stats
+                    .indexOfFirst { stat -> stat.handType == i.key.name }
+                    .takeIf { it != -1 }
+                    ?.let { stats.removeAt(it) }
+                    ?.let { stat ->
+                        stat.copy(
+                            numberOfTimes = stat.numberOfTimes + 1,
+                            totalPoints = stat.totalPoints + i.value.get(),
+                        )
+                    } ?: ActualYahtzeeScoreStat(
+                    handType = i.key.name,
+                    numberOfTimes = 1,
+                    totalPoints = i.value.get().toLong(),
+                )
+
+                statsStuff.set(
+                    stats
+                        .apply { add(newStat) }
+                        .sortedByDescending { it.totalPoints }
+                )
+            }
         }
     }
 
