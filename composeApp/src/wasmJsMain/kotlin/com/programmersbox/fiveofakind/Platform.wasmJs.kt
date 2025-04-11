@@ -271,31 +271,6 @@ data class YahtzeeSettings(
 )
 
 @Composable
-fun rememberSettingsPreference(): MutableState<YahtzeeSettings> {
-    val coroutineScope = rememberCoroutineScope()
-    val state by remember {
-        settingsStuff
-            .updates
-            .filterNotNull()
-    }.collectAsStateWithLifecycle(YahtzeeSettings())
-
-    return remember(state) {
-        object : MutableState<YahtzeeSettings> {
-            override var value: YahtzeeSettings
-                get() = state
-                set(value) {
-                    coroutineScope.launch {
-                        runCatching { settingsStuff.set(value) }
-                    }
-                }
-
-            override fun component1() = value
-            override fun component2(): (YahtzeeSettings) -> Unit = { value = it }
-        }
-    }
-}
-
-@Composable
 fun <T> rememberSettingsPreferences(
     onGet: (YahtzeeSettings) -> T,
     onSet: (YahtzeeSettings, T) -> YahtzeeSettings,

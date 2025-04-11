@@ -19,12 +19,6 @@ interface Platform {
 
 expect fun getPlatform(): Platform
 
-@Composable
-expect fun rememberShowDotsOnDice(): MutableState<Boolean>
-
-@Composable
-expect fun rememberUse24HourTime(): MutableState<Boolean>
-
 expect class YahtzeeDatabase {
     fun getHighScores(): Flow<List<ActualYahtzeeScoreItem>>
     suspend fun addHighScore(scoreItem: ActualYahtzeeScoreItem)
@@ -65,6 +59,12 @@ data class ActualYahtzeeScoreStat(
     val numberOfTimes: Int = 0,
     val totalPoints: Long = 0L,
 )
+
+@Composable
+expect fun rememberShowDotsOnDice(): MutableState<Boolean>
+
+@Composable
+expect fun rememberUse24HourTime(): MutableState<Boolean>
 
 @Composable
 expect fun rememberThemeColor(): MutableState<ThemeColor>
