@@ -33,7 +33,7 @@ actual class YahtzeeDatabase {
     )
 
     private val highScoreStuff = storeOf<List<ActualYahtzeeScoreItem>>(
-        key = "highScoreStuff",
+        key = "yahtzeeScoreStuff",
         default = emptyList(),
     )
 
