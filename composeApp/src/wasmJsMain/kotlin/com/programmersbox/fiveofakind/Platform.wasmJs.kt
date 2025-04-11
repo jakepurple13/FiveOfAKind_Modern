@@ -3,6 +3,7 @@ package com.programmersbox.fiveofakind
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.materialkolor.rememberDynamicColorScheme
 import io.github.xxfast.kstore.extensions.getOrEmpty
 import io.github.xxfast.kstore.extensions.updatesOrEmpty
@@ -10,6 +11,8 @@ import io.github.xxfast.kstore.storage.storeOf
 import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 class WasmPlatform : Platform {
     override val name: String = "Web with Kotlin/Wasm"
@@ -127,7 +130,9 @@ fun <T> rememberPreference(
                 get() = state
                 set(value) {
                     mutableState.value = value
-                    localStorage.setItem(key, valueToString(value))
+                    runCatching {
+                        localStorage.setItem(key, valueToString(value))
+                    }
                 }
 
             override fun component1() = value
@@ -136,12 +141,13 @@ fun <T> rememberPreference(
     }
 }
 
-private val showDotsOnDice by lazy {
+/*private val showDotsOnDice by lazy {
     mutableStateOf(
-        localStorage
-            .getItem("showDotsOnDice")
-            ?.toBoolean()
-            ?: true
+        runCatching {
+            localStorage
+                .getItem("showDotsOnDice")
+                ?.toBoolean()
+        }.getOrNull() ?: true
     )
 }
 
@@ -154,10 +160,11 @@ actual fun rememberShowDotsOnDice(): MutableState<Boolean> = rememberPreference(
 
 private val use24HourTime by lazy {
     mutableStateOf(
-        localStorage
-            .getItem("use24HourTime")
-            ?.toBoolean()
-            ?: true
+        runCatching {
+            localStorage
+                .getItem("use24HourTime")
+                ?.toBoolean()
+        }.getOrNull() ?: true
     )
 }
 
@@ -170,10 +177,11 @@ actual fun rememberUse24HourTime(): MutableState<Boolean> = rememberPreference(
 
 private val isAmoled by lazy {
     mutableStateOf(
-        localStorage
-            .getItem("isAmoled")
-            ?.toBoolean()
-            ?: false
+        runCatching {
+            localStorage
+                .getItem("isAmoled")
+                ?.toBoolean()
+        }.getOrNull() ?: false
     )
 }
 
@@ -203,10 +211,11 @@ actual fun rememberThemeColor(): MutableState<ThemeColor> = rememberPreference(
 
 private val showInstructions by lazy {
     mutableStateOf(
-        localStorage
-            .getItem("showInstructions")
-            ?.toBoolean()
-            ?: true
+        runCatching {
+            localStorage
+                .getItem("showInstructions")
+                ?.toBoolean()
+        }.getOrNull() ?: true
     )
 }
 
@@ -215,4 +224,101 @@ actual fun rememberShowInstructions(): MutableState<Boolean> = rememberPreferenc
     key = "showInstructions",
     mutableState = showInstructions,
     valueToString = { it.toString() }
+)*/
+
+@Composable
+actual fun rememberShowInstructions(): MutableState<Boolean> = rememberSettingsPreferences(
+    onGet = { it.showInstructions },
+    onSet = { s, v -> s.copy(showInstructions = v) }
 )
+
+@Composable
+actual fun rememberThemeColor(): MutableState<ThemeColor> = rememberSettingsPreferences(
+    onGet = { it.themeColor },
+    onSet = { s, v -> s.copy(themeColor = v) }
+)
+
+@Composable
+actual fun rememberIsAmoled(): MutableState<Boolean> = rememberSettingsPreferences(
+    onGet = { it.isAmoled },
+    onSet = { s, v -> s.copy(isAmoled = v) }
+)
+
+@Composable
+actual fun rememberShowDotsOnDice(): MutableState<Boolean> = rememberSettingsPreferences(
+    onGet = { it.showDotsOnDice },
+    onSet = { s, v -> s.copy(showDotsOnDice = v) }
+)
+
+@Composable
+actual fun rememberUse24HourTime(): MutableState<Boolean> = rememberSettingsPreferences(
+    onGet = { it.use24HourTime },
+    onSet = { s, v -> s.copy(use24HourTime = v) }
+)
+
+private val settingsStuff = storeOf<YahtzeeSettings>(
+    key = "settingsStuff",
+    default = YahtzeeSettings(),
+)
+
+@Serializable
+data class YahtzeeSettings(
+    val showDotsOnDice: Boolean = true,
+    val use24HourTime: Boolean = true,
+    val themeColor: ThemeColor = ThemeColor.Dynamic,
+    val isAmoled: Boolean = false,
+    val showInstructions: Boolean = true,
+)
+
+@Composable
+fun rememberSettingsPreference(): MutableState<YahtzeeSettings> {
+    val coroutineScope = rememberCoroutineScope()
+    val state by remember {
+        settingsStuff
+            .updates
+            .filterNotNull()
+    }.collectAsStateWithLifecycle(YahtzeeSettings())
+
+    return remember(state) {
+        object : MutableState<YahtzeeSettings> {
+            override var value: YahtzeeSettings
+                get() = state
+                set(value) {
+                    coroutineScope.launch {
+                        runCatching { settingsStuff.set(value) }
+                    }
+                }
+
+            override fun component1() = value
+            override fun component2(): (YahtzeeSettings) -> Unit = { value = it }
+        }
+    }
+}
+
+@Composable
+fun <T> rememberSettingsPreferences(
+    onGet: (YahtzeeSettings) -> T,
+    onSet: (YahtzeeSettings, T) -> YahtzeeSettings,
+): MutableState<T> {
+    val coroutineScope = rememberCoroutineScope()
+    val state by remember {
+        settingsStuff
+            .updates
+            .filterNotNull()
+    }.collectAsStateWithLifecycle(YahtzeeSettings())
+
+    return remember(state) {
+        object : MutableState<T> {
+            override var value: T
+                get() = onGet(state)
+                set(value) {
+                    coroutineScope.launch {
+                        runCatching { settingsStuff.set(onSet(state, value)) }
+                    }
+                }
+
+            override fun component1() = value
+            override fun component2(): (T) -> Unit = { value = it }
+        }
+    }
+}

@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 
 internal enum class YahtzeeState { RollOne, RollTwo, RollThree, Stop }
 
+//TODO: THIS SHOULD BE TRUE!!!
 const val IS_NOT_DEBUG = true
 
 internal class YahtzeeViewModel : ViewModel() {

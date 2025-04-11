@@ -78,6 +78,7 @@ expect fun rememberShowInstructions(): MutableState<Boolean>
 @Composable
 expect fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme
 
+@Serializable
 enum class ThemeColor(
     val seedColor: Color,
 ) {
