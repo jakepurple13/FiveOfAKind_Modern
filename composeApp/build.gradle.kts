@@ -98,6 +98,13 @@ kotlin {
             implementation(libs.androidx.room.sqlite)
         }
 
+        val wasmJsMain by getting
+
+        wasmJsMain.dependencies {
+            implementation(libs.kstore)
+            implementation(libs.kstore.storage)
+        }
+
         val nonJsMain by getting
 
         nonJsMain.dependencies {

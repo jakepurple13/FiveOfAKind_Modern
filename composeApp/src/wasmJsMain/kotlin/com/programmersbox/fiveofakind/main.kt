@@ -6,9 +6,10 @@ import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
+    val database = YahtzeeDatabase()
     ComposeViewport(document.body!!) {
         App(
-            database = YahtzeeDatabase()
+            database = database
         )
     }
 }

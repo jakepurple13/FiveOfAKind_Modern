@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.Color
 import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 interface Platform {
     val name: String
@@ -30,6 +32,7 @@ expect class YahtzeeDatabase {
     fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>>
 }
 
+@Serializable
 data class ActualYahtzeeScoreItem(
     val time: Long = Clock.System.now().toEpochMilliseconds(),
     val ones: Int = 0,
@@ -46,11 +49,17 @@ data class ActualYahtzeeScoreItem(
     val yahtzee: Int = 0,
     val chance: Int = 0,
 ) {
+    @Transient
     val smallScore get() = ones + twos + threes + fours + fives + sixes
+
+    @Transient
     val largeScore get() = threeKind + fourKind + fullHouse + smallStraight + largeStraight + yahtzee + chance
+
+    @Transient
     val totalScore get() = largeScore + smallScore + if (smallScore >= 63) 35 else 0
 }
 
+@Serializable
 data class ActualYahtzeeScoreStat(
     val handType: String,
     val numberOfTimes: Int = 0,
