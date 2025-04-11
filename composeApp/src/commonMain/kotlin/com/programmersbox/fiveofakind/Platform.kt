@@ -64,6 +64,9 @@ expect fun rememberThemeColor(): MutableState<ThemeColor>
 expect fun rememberIsAmoled(): MutableState<Boolean>
 
 @Composable
+expect fun rememberShowInstructions(): MutableState<Boolean>
+
+@Composable
 expect fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme
 
 enum class ThemeColor(

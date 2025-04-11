@@ -50,3 +50,8 @@ private val themeColor = mutableStateOf(ThemeColor.Dynamic)
 
 @Composable
 actual fun rememberThemeColor(): MutableState<ThemeColor> = themeColor
+
+private val showInstructions = mutableStateOf(false)
+
+@Composable
+actual fun rememberShowInstructions(): MutableState<Boolean> = showInstructions

@@ -119,3 +119,9 @@ actual fun rememberIsAmoled() = rememberPreference(
     key = booleanPreferencesKey("is_amoled"),
     defaultValue = false,
 )
+
+@Composable
+actual fun rememberShowInstructions(): MutableState<Boolean> = rememberPreference(
+    key = booleanPreferencesKey("show_instructions"),
+    defaultValue = true,
+)

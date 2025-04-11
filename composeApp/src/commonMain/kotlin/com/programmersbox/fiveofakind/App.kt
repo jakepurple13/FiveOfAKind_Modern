@@ -10,10 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -92,6 +89,8 @@ internal fun YahtzeeScreen(
         )
     }
 
+    var instructions by YahtzeeInstructions()
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     var statsDialog by remember { mutableStateOf(false) }
@@ -128,10 +127,27 @@ internal fun YahtzeeScreen(
                     }
                 ) { p ->
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
-                        contentPadding = p
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        contentPadding = p,
+                        modifier = Modifier.padding(horizontal = 4.dp)
                     ) {
                         ThemeChange()
+
+                        item {
+                            OutlinedCard(
+                                onClick = { isUsing24HourTime = !isUsing24HourTime },
+                                shape = MaterialTheme.shapes.extraLarge,
+                            ) {
+                                ListItem(
+                                    headlineContent = { Text("Time Format") },
+                                    supportingContent = {
+                                        Crossfade(isUsing24HourTime) { target ->
+                                            Text(if (target) "24H" else "12H")
+                                        }
+                                    },
+                                )
+                            }
+                        }
 
                         items(highScores) {
                             HighScoreItem(
@@ -166,14 +182,12 @@ internal fun YahtzeeScreen(
                                 }
                             ) { Text("Finish") }
                         }
+
+                        IconButton(
+                            onClick = { instructions = !instructions },
+                        ) { Icon(Icons.Default.Info, null) }
+
                         TextButton(onClick = { newGameDialog = true }) { Text("New Game") }
-                        TextButton(
-                            onClick = { isUsing24HourTime = !isUsing24HourTime },
-                        ) {
-                            Crossfade(isUsing24HourTime) { target ->
-                                Text(if (target) "24H" else "12H")
-                            }
-                        }
                         Spacer(Modifier.width(12.dp))
                         Dice(1, "").ShowDice(
                             useDots = diceLook,
@@ -879,4 +893,31 @@ private fun SelectableMiniPalette(
         shape = CircleShape,
         color = Color(accents[0].tone(60)),
     ) { content() }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun YahtzeeInstructions(): MutableState<Boolean> {
+    val showInstructions = rememberShowInstructions()
+
+    if (showInstructions.value) {
+        ModalBottomSheet(
+            onDismissRequest = { showInstructions.value = false },
+            containerColor = MaterialTheme.colorScheme.background,
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                TopAppBar(
+                    title = { Text("Instructions") },
+                    windowInsets = WindowInsets(0.dp)
+                )
+
+                Text(instructions, modifier = Modifier.padding(16.dp))
+            }
+        }
+    }
+
+    return showInstructions
 }
