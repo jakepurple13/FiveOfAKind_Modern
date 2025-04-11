@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -308,6 +309,14 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
     val isAmoled by rememberIsAmoled()
     BottomAppBar(
         containerColor = if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
+        contentPadding = BottomAppBarDefaults.ContentPadding.let {
+            PaddingValues(
+                bottom = it.calculateTopPadding(),
+                start = it.calculateStartPadding(LayoutDirection.Ltr),
+                end = it.calculateEndPadding(LayoutDirection.Ltr),
+                top = it.calculateTopPadding(),
+            )
+        }
     ) {
         vm.hand.forEach { dice ->
             dice(
@@ -324,23 +333,30 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
             ) { if (dice in vm.hold) vm.hold.remove(dice) else vm.hold.add(dice) }
         }
 
-        IconButton(
+        FilledTonalButton(
             onClick = vm::reroll,
             //TODO: && !vm.rolling fixes the double tap feature
             enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
-            modifier = Modifier.weight(1f),
-        ) {
-            Icon(
-                Icons.Default.PlayArrow,
-                null,
-                tint = animateColorAsState(
+            shape = RoundedCornerShape(7.dp),
+            border = BorderStroke(
+                4.dp,
+                animateColorAsState(
                     when (vm.state) {
                         YahtzeeState.RollOne -> Emerald
                         YahtzeeState.RollTwo -> Sunflower
                         YahtzeeState.RollThree -> Alizarin
-                        YahtzeeState.Stop -> LocalContentColor.current
+                        YahtzeeState.Stop -> Color.Unspecified
                     }
                 ).value
+            ),
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .weight(1f)
+                .aspectRatio(1f, true)
+        ) {
+            Icon(
+                Icons.Default.PlayArrow,
+                null,
             )
         }
     }
