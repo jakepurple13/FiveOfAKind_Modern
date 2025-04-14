@@ -9,9 +9,6 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.graphics.Color
 import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 interface Platform {
     val name: String
@@ -25,40 +22,6 @@ expect class YahtzeeDatabase {
     suspend fun removeHighScore(scoreItem: ActualYahtzeeScoreItem)
     fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>>
 }
-
-@Serializable
-data class ActualYahtzeeScoreItem(
-    val time: Long = Clock.System.now().toEpochMilliseconds(),
-    val ones: Int = 0,
-    val twos: Int = 0,
-    val threes: Int = 0,
-    val fours: Int = 0,
-    val fives: Int = 0,
-    val sixes: Int = 0,
-    val threeKind: Int = 0,
-    val fourKind: Int = 0,
-    val fullHouse: Int = 0,
-    val smallStraight: Int = 0,
-    val largeStraight: Int = 0,
-    val yahtzee: Int = 0,
-    val chance: Int = 0,
-) {
-    @Transient
-    val smallScore get() = ones + twos + threes + fours + fives + sixes
-
-    @Transient
-    val largeScore get() = threeKind + fourKind + fullHouse + smallStraight + largeStraight + yahtzee + chance
-
-    @Transient
-    val totalScore get() = largeScore + smallScore + if (smallScore >= 63) 35 else 0
-}
-
-@Serializable
-data class ActualYahtzeeScoreStat(
-    val handType: String,
-    val numberOfTimes: Int = 0,
-    val totalPoints: Long = 0L,
-)
 
 @Composable
 expect fun rememberShowDotsOnDice(): MutableState<Boolean>
@@ -77,20 +40,6 @@ expect fun rememberShowInstructions(): MutableState<Boolean>
 
 @Composable
 expect fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme
-
-@Serializable
-enum class ThemeColor(
-    val seedColor: Color,
-) {
-    Dynamic(Color.Transparent),
-    Blue(Color.Blue),
-    Red(Color.Red),
-    Green(Color.Green),
-    Yellow(Color.Yellow),
-    Cyan(Color.Cyan),
-    Magenta(Color.Magenta),
-    Custom(Color.Transparent),
-}
 
 @Composable
 fun buildColorScheme(

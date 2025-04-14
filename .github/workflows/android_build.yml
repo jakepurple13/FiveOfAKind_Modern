@@ -39,7 +39,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
-          arguments: "exportLibrariesDefinitions"
+          arguments: "exportLibraryDefinitions"
 
       - name: Build Artifacts
         id: buildApks
