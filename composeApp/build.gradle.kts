@@ -154,7 +154,7 @@ aboutLibraries {
     }
     export {
         // Define the output path (including fileName)
-        outputPath = file("src/commonMain/composeResources/files/aboutlibraries.json")
+        outputPath = file("${project.projectDir.path}/src/commonMain/composeResources/files/aboutlibraries.json")
     }
 }
 

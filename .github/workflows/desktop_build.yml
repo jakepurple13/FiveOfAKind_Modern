@@ -57,11 +57,11 @@ jobs:
           distribution: adopt
           java-version: 17
 
-      - name: Build with Gradle
+      - name: Export Libraries
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
-          arguments: "exportLibraries"
+          arguments: "exportLibrariesDefinitions"
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2

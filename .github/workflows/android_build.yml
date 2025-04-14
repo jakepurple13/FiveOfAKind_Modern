@@ -35,11 +35,11 @@ jobs:
           set -x
           echo "VERSION_TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
-      - name: Build with Gradle
+      - name: Export Libraries
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
-          arguments: "exportLibraries"
+          arguments: "exportLibrariesDefinitions"
 
       - name: Build Artifacts
         id: buildApks

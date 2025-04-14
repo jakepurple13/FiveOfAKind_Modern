@@ -15,11 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build with Gradle
+      - name: Export Libraries
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
-          arguments: "exportLibraries"
+          arguments: "exportLibrariesDefinitions"
 
       - name: Run Gradle Tasks
         run: ./gradlew wasmJsBrowserDistribution
