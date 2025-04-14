@@ -48,11 +48,12 @@ fun App(
         val navController = rememberNavController()
         NavHost(
             navController = navController,
-            startDestination = Home
+            startDestination = Yahtzee
         ) {
             composable<Home> {
-                YahtzeeScreen(
-                    database = database,
+                GameSelectionScreen(
+                    onYahtzeeClick = { navController.navigate(Yahtzee) },
+                    onFarkleClick = { navController.navigate(Farkle) },
                     onAboutClick = { navController.navigate(About) },
                 )
             }
@@ -62,6 +63,83 @@ fun App(
                     onBack = { navController.popBackStack() },
                 )
             }
+
+            composable<Farkle> {
+                FarkleScreen(
+                    database = database,
+                    onAboutClick = { navController.navigate(About) },
+                    onBackClick = { navController.popBackStack() },
+                )
+            }
+
+            composable<Yahtzee> {
+                YahtzeeScreen(
+                    database = database,
+                    onAboutClick = { navController.navigate(About) },
+                    onBackClick = { navController.popBackStack(Home, true) },
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun GameSelectionScreen(
+    onYahtzeeClick: () -> Unit,
+    onFarkleClick: () -> Unit,
+    onAboutClick: () -> Unit,
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Dice Games") },
+                actions = {
+                    IconButton(
+                        onClick = onAboutClick,
+                    ) { Icon(Icons.Default.Info, null) }
+                }
+            )
+        }
+    ) { p ->
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .padding(p)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "Select a Game",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+
+            Button(
+                onClick = onYahtzeeClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("Five Dice (Yahtzy)", style = MaterialTheme.typography.titleLarge)
+            }
+
+            Button(
+                onClick = onFarkleClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("Farkle", style = MaterialTheme.typography.titleLarge)
+            }
+
+            Text(
+                getPlatform().name,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.padding(top = 32.dp)
+            )
         }
     }
 }
@@ -71,6 +149,12 @@ data object Home
 
 @Serializable
 data object About
+
+@Serializable
+data object Farkle
+
+@Serializable
+data object Yahtzee
 
 internal typealias ScoreClick = () -> Unit
 
@@ -84,6 +168,7 @@ internal fun YahtzeeScreen(
     vm: YahtzeeViewModel = viewModel { YahtzeeViewModel() },
     database: YahtzeeDatabase,
     onAboutClick: () -> Unit,
+    onBackClick: () -> Unit = {},
 ) {
     var diceLook by rememberShowDotsOnDice()
     var isUsing24HourTime by rememberUse24HourTime()
@@ -205,9 +290,15 @@ internal fun YahtzeeScreen(
             topBar = {
                 TopAppBar(
                     navigationIcon = {
-                        IconButton(
-                            onClick = { scope.launch { drawerState.open() } }
-                        ) { Icon(Icons.Default.Menu, null) }
+                        Row {
+                            /*IconButton(
+                                onClick = { onBackClick() }
+                            ) { Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home") }*/
+
+                            IconButton(
+                                onClick = { scope.launch { drawerState.open() } }
+                            ) { Icon(Icons.Default.Menu, null) }
+                        }
                     },
                     title = { Text("Five Dice") },
                     actions = {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -73,7 +74,20 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
         tonalElevation = 4.dp,
         enabled = dice.value != 0,
         border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colorScheme.surface)),
-        modifier = modifier.size(56.dp)
+        modifier = modifier
+            .sizeIn(56.dp)
+        /*.drawBehind {
+
+            val strokeWidth = 10 * density
+            val y = size.height - strokeWidth / 2
+
+            drawLine(
+                Color.Red,
+                Offset(0f, y),
+                Offset(size.width, y),
+                strokeWidth
+            )
+        }*/
     ) { DiceDotsPattern(dice.value) }
 }
 
