@@ -10,8 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-internal enum class YahtzeeState { RollOne, RollTwo, RollThree, Stop }
+@Serializable
+enum class YahtzeeState { RollOne, RollTwo, RollThree, Stop }
 
 //TODO: THIS SHOULD BE TRUE!!!
 const val IS_NOT_DEBUG = true
@@ -36,6 +38,14 @@ internal class YahtzeeViewModel : ViewModel() {
 
     val hold = mutableStateListOf<Dice>()
 
+    init {
+        viewModelScope.launch {
+            if (hasSavedYahtzeeGame()) {
+                loadYahtzeeGame()?.let { loadFromSavedGame(it) }
+            }
+        }
+    }
+
     fun reroll() {
         viewModelScope.launch {
             rolling = true
@@ -53,6 +63,7 @@ internal class YahtzeeViewModel : ViewModel() {
                 YahtzeeState.RollThree -> YahtzeeState.Stop
                 YahtzeeState.Stop -> YahtzeeState.RollOne
             }
+            saveYahtzeeGame(toSavedGame())
         }
     }
 
@@ -90,11 +101,13 @@ internal class YahtzeeViewModel : ViewModel() {
         hold.clear()
         hand.forEach { it.value = 0 }
         state = YahtzeeState.RollOne
+        viewModelScope.launch { saveYahtzeeGame(toSavedGame()) }
     }
 
     fun resetGame() {
         reset()
         scores.resetScores()
         showGameOverDialog = true
+        viewModelScope.launch { deleteSavedYahtzeeGame() }
     }
 }

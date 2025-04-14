@@ -72,3 +72,8 @@ fun buildColorScheme(
         }
     }
 }
+
+expect suspend fun saveYahtzeeGame(game: SavedYahtzeeGame)
+expect suspend fun loadYahtzeeGame(): SavedYahtzeeGame?
+expect suspend fun hasSavedYahtzeeGame(): Boolean
+expect suspend fun deleteSavedYahtzeeGame()

@@ -222,3 +222,22 @@ fun <T> rememberSettingsPreferences(
         }
     }
 }
+
+private val savedGameStuff by lazy {
+    storeOf<SavedYahtzeeGame>(
+        key = "savedGameStuff",
+        default = SavedYahtzeeGame()
+    )
+}
+
+actual suspend fun deleteSavedYahtzeeGame() {
+    savedGameStuff.delete()
+}
+
+actual suspend fun hasSavedYahtzeeGame(): Boolean = savedGameStuff.get() != null
+
+actual suspend fun loadYahtzeeGame(): SavedYahtzeeGame? = savedGameStuff.get()
+
+actual suspend fun saveYahtzeeGame(game: SavedYahtzeeGame) {
+    savedGameStuff.set(game)
+}

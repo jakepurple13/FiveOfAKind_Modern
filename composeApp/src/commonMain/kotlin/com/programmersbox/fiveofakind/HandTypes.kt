@@ -3,9 +3,11 @@ package com.programmersbox.fiveofakind
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import kotlinx.serialization.Serializable
 import kotlin.math.max
 
-internal enum class HandType(val isSmall: Boolean, val displayName: String) {
+@Serializable
+enum class HandType(val isSmall: Boolean, val displayName: String) {
     Ones(true, "Ones"),
     Twos(true, "Twos"),
     Threes(true, "Threes"),

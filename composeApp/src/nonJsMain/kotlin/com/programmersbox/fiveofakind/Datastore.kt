@@ -4,11 +4,9 @@ import androidx.compose.runtime.*
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import okio.Path.Companion.toPath
 
 private lateinit var dataStore: DataStore<Preferences>
@@ -125,3 +123,40 @@ actual fun rememberShowInstructions(): MutableState<Boolean> = rememberPreferenc
     key = booleanPreferencesKey("show_instructions"),
     defaultValue = true,
 )
+
+// Save and load game state
+private val SAVED_GAME_KEY = stringPreferencesKey("saved_yahtzee_game")
+
+actual suspend fun saveYahtzeeGame(game: SavedYahtzeeGame) {
+    if (::dataStore.isInitialized) {
+        dataStore.edit { preferences ->
+            preferences[SAVED_GAME_KEY] = Json.encodeToString(game)
+        }
+    }
+}
+
+actual suspend fun loadYahtzeeGame(): SavedYahtzeeGame? {
+    if (!::dataStore.isInitialized) return null
+
+    val preferences = dataStore.data.firstOrNull()
+    val gameJson = preferences?.get(SAVED_GAME_KEY) ?: return null
+
+    return runCatching {
+        Json.decodeFromString<SavedYahtzeeGame>(gameJson)
+    }.getOrNull()
+}
+
+actual suspend fun hasSavedYahtzeeGame(): Boolean {
+    if (!::dataStore.isInitialized) return false
+
+    val preferences = dataStore.data.firstOrNull()
+    return preferences?.contains(SAVED_GAME_KEY) == true
+}
+
+actual suspend fun deleteSavedYahtzeeGame() {
+    if (::dataStore.isInitialized) {
+        dataStore.edit { preferences ->
+            preferences.remove(SAVED_GAME_KEY)
+        }
+    }
+}
