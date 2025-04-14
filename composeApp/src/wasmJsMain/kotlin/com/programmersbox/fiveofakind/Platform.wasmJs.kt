@@ -179,11 +179,11 @@ private val settingsStuff by lazy {
 
 @Serializable
 data class YahtzeeSettings(
-    val showDotsOnDice: Boolean = true,
+    val showDotsOnDice: Boolean = false,
     val use24HourTime: Boolean = true,
     val themeColor: ThemeColor = ThemeColor.Dynamic,
     val isAmoled: Boolean = false,
-    val showInstructions: Boolean = false,
+    val showInstructions: Boolean = true,
 )
 
 @Composable
