@@ -2,7 +2,9 @@ package com.programmersbox.fiveofakind
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,12 +14,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
 import kotlin.random.nextInt
-
-private const val DOT_LOOK = "●"
 
 internal class Dice(value: Int = Random.nextInt(1..6), @Suppress("unused") val location: String) {
     var value by mutableIntStateOf(value)
@@ -77,26 +79,67 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
     ) {
         when (dice.value) {
             1 -> {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) {
-                    Text(
-                        DOT_LOOK,
-                        textAlign = TextAlign.Center
+                val fontSize = LocalTextStyle.current.fontSize
+                val fontColor = LocalContentColor.current
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val radius = fontSize.toPx() / 4
+
+                    drawCircle(
+                        color = fontColor,
+                        radius = radius,
+                        center = center
                     )
                 }
             }
 
             2 -> {
-                Box(modifier = Modifier.padding(4.dp)) {
-                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.TopEnd), textAlign = TextAlign.Center)
-                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.BottomStart), textAlign = TextAlign.Center)
+                val fontSize = LocalTextStyle.current.fontSize
+                val fontColor = LocalContentColor.current
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val radius = fontSize.toPx() / 4
+
+                    // Top-right dot
+                    drawCircle(
+                        color = fontColor,
+                        radius = radius,
+                        center = Offset(size.width * 0.75f, size.height * 0.25f)
+                    )
+
+                    // Bottom-left dot
+                    drawCircle(
+                        color = fontColor,
+                        radius = radius,
+                        center = Offset(size.width * 0.25f, size.height * 0.75f)
+                    )
                 }
             }
 
             3 -> {
-                Box(modifier = Modifier.padding(4.dp)) {
-                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.TopEnd), textAlign = TextAlign.Center)
-                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.Center), textAlign = TextAlign.Center)
-                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.BottomStart), textAlign = TextAlign.Center)
+                val fontSize = LocalTextStyle.current.fontSize
+                val fontColor = LocalContentColor.current
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val radius = fontSize.toPx() / 4
+
+                    // Top-right dot
+                    drawCircle(
+                        color = fontColor,
+                        radius = radius,
+                        center = Offset(size.width * 0.75f, size.height * 0.25f)
+                    )
+
+                    // Center dot
+                    drawCircle(
+                        color = fontColor,
+                        radius = radius,
+                        center = center
+                    )
+
+                    // Bottom-left dot
+                    drawCircle(
+                        color = fontColor,
+                        radius = radius,
+                        center = Offset(size.width * 0.25f, size.height * 0.75f)
+                    )
                 }
             }
 
@@ -108,22 +151,15 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
             }
 
             5 -> {
-                Box(modifier = Modifier.padding(4.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    ) {
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                    }
-                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.Center), textAlign = TextAlign.Center)
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    ) {
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                    }
+                CanvasDice(
+                    diceValue = 4,
+                    spaceBetweenHeightDivider = 3,
+                ) { fontColor, radius ->
+                    drawCircle(
+                        color = fontColor,
+                        radius = radius,
+                        center = center
+                    )
                 }
             }
 
@@ -141,12 +177,14 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
 private fun CanvasDice(
     diceValue: Int,
     spaceBetweenHeightDivider: Int,
+    spaceBetweenWidthDivider: Int = 3,
+    canvasContent: DrawScope.(fontColor: Color, radius: Float) -> Unit = { _, _ -> },
 ) {
     // Use Canvas for more efficient rendering of 6 dots
     val fontSize = LocalTextStyle.current.fontSize
     val fontColor = LocalContentColor.current
     Canvas(modifier = Modifier.fillMaxSize()) {
-        val spaceBetweenWidthDots = size.width / 3
+        val spaceBetweenWidthDots = size.width / spaceBetweenWidthDivider
         val spaceBetweenHeightDots = size.height / spaceBetweenHeightDivider
         val radius = fontSize.toPx() / 4
 
@@ -160,5 +198,7 @@ private fun CanvasDice(
                 center = Offset(x, y)
             )
         }
+
+        canvasContent(fontColor, radius)
     }
 }

@@ -6,9 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
-import platform.Foundation.NSUserDomainMask
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
 fun MainViewController() = ComposeUIViewController {
@@ -24,7 +24,7 @@ fun MainViewController() = ComposeUIViewController {
             requireNotNull(documentDirectory).path + "/settings.preferences_pb"
         }
     }
-    App(database = YahtzeeDatabase(getDatabaseBuilder()))
+    App(database = remember { YahtzeeDatabase(getDatabaseBuilder()) })
 }
 
 

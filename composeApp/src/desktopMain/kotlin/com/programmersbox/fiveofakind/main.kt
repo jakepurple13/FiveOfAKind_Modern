@@ -13,13 +13,11 @@ fun main() = application {
     remember { Settings { "settings.preferences_pb" } }
     Window(
         onCloseRequest = ::exitApplication,
-        title = "FiveOfAKind",
+        title = "Five Of A Kind",
     ) {
         DevelopmentEntryPoint {
             App(
-                database = remember {
-                    YahtzeeDatabase(getDatabaseBuilder())
-                }
+                database = remember { YahtzeeDatabase(getDatabaseBuilder()) }
             )
         }
     }
