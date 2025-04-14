@@ -14,8 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
@@ -76,129 +74,65 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
         enabled = dice.value != 0,
         border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colorScheme.surface)),
         modifier = modifier.size(56.dp)
-    ) {
-        when (dice.value) {
-            1 -> {
-                val fontSize = LocalTextStyle.current.fontSize
-                val fontColor = LocalContentColor.current
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val radius = fontSize.toPx() / 4
-
-                    drawCircle(
-                        color = fontColor,
-                        radius = radius,
-                        center = center
-                    )
-                }
-            }
-
-            2 -> {
-                val fontSize = LocalTextStyle.current.fontSize
-                val fontColor = LocalContentColor.current
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val radius = fontSize.toPx() / 4
-
-                    // Top-right dot
-                    drawCircle(
-                        color = fontColor,
-                        radius = radius,
-                        center = Offset(size.width * 0.75f, size.height * 0.25f)
-                    )
-
-                    // Bottom-left dot
-                    drawCircle(
-                        color = fontColor,
-                        radius = radius,
-                        center = Offset(size.width * 0.25f, size.height * 0.75f)
-                    )
-                }
-            }
-
-            3 -> {
-                val fontSize = LocalTextStyle.current.fontSize
-                val fontColor = LocalContentColor.current
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val radius = fontSize.toPx() / 4
-
-                    // Top-right dot
-                    drawCircle(
-                        color = fontColor,
-                        radius = radius,
-                        center = Offset(size.width * 0.75f, size.height * 0.25f)
-                    )
-
-                    // Center dot
-                    drawCircle(
-                        color = fontColor,
-                        radius = radius,
-                        center = center
-                    )
-
-                    // Bottom-left dot
-                    drawCircle(
-                        color = fontColor,
-                        radius = radius,
-                        center = Offset(size.width * 0.25f, size.height * 0.75f)
-                    )
-                }
-            }
-
-            4 -> {
-                CanvasDice(
-                    diceValue = 4,
-                    spaceBetweenHeightDivider = 3
-                )
-            }
-
-            5 -> {
-                CanvasDice(
-                    diceValue = 4,
-                    spaceBetweenHeightDivider = 3,
-                ) { fontColor, radius ->
-                    drawCircle(
-                        color = fontColor,
-                        radius = radius,
-                        center = center
-                    )
-                }
-            }
-
-            6 -> {
-                CanvasDice(
-                    diceValue = 6,
-                    spaceBetweenHeightDivider = 4
-                )
-            }
-        }
-    }
+    ) { DiceDotsPattern(dice.value) }
 }
 
 @Composable
-private fun CanvasDice(
-    diceValue: Int,
-    spaceBetweenHeightDivider: Int,
-    spaceBetweenWidthDivider: Int = 3,
-    canvasContent: DrawScope.(fontColor: Color, radius: Float) -> Unit = { _, _ -> },
-) {
-    // Use Canvas for more efficient rendering of 6 dots
+private fun DiceDotsPattern(diceValue: Int) {
     val fontSize = LocalTextStyle.current.fontSize
     val fontColor = LocalContentColor.current
+
     Canvas(modifier = Modifier.fillMaxSize()) {
-        val spaceBetweenWidthDots = size.width / spaceBetweenWidthDivider
-        val spaceBetweenHeightDots = size.height / spaceBetweenHeightDivider
         val radius = fontSize.toPx() / 4
 
-        // Draw all 6 dots in a single pass
-        for (i in 0 until diceValue) {
-            val x = spaceBetweenWidthDots * (i % 2 + 1)
-            val y = spaceBetweenHeightDots * (i / 2 + 1)
+        // Define dot positions for each dice value
+        val dotPositions = when (diceValue) {
+            1 -> listOf(center) // Center
+            2 -> listOf(
+                Offset(size.width * 0.75f, size.height * 0.25f), // Top-right
+                Offset(size.width * 0.25f, size.height * 0.75f)  // Bottom-left
+            )
+
+            3 -> listOf(
+                Offset(size.width * 0.75f, size.height * 0.25f), // Top-right
+                center, // Center
+                Offset(size.width * 0.25f, size.height * 0.75f)  // Bottom-left
+            )
+
+            4 -> listOf(
+                Offset(size.width * 0.25f, size.height * 0.25f), // Top-left
+                Offset(size.width * 0.75f, size.height * 0.25f), // Top-right
+                Offset(size.width * 0.25f, size.height * 0.75f), // Bottom-left
+                Offset(size.width * 0.75f, size.height * 0.75f)  // Bottom-right
+            )
+
+            5 -> listOf(
+                Offset(size.width * 0.25f, size.height * 0.25f), // Top-left
+                Offset(size.width * 0.75f, size.height * 0.25f), // Top-right
+                center, // Center
+                Offset(size.width * 0.25f, size.height * 0.75f), // Bottom-left
+                Offset(size.width * 0.75f, size.height * 0.75f)  // Bottom-right
+            )
+
+            6 -> listOf(
+                Offset(size.width * 0.25f, size.height * 0.25f), // Top-left
+                Offset(size.width * 0.75f, size.height * 0.25f), // Top-right
+                Offset(size.width * 0.25f, size.height * 0.5f),  // Middle-left
+                Offset(size.width * 0.75f, size.height * 0.5f),  // Middle-right
+                Offset(size.width * 0.25f, size.height * 0.75f), // Bottom-left
+                Offset(size.width * 0.75f, size.height * 0.75f)  // Bottom-right
+            )
+
+            else -> emptyList()
+        }
+
+        // Draw all dots in a single pass
+        dotPositions.forEach { position ->
             drawCircle(
                 color = fontColor,
                 radius = radius,
-                center = Offset(x, y)
+                center = position
             )
         }
-
-        canvasContent(fontColor, radius)
     }
 }
