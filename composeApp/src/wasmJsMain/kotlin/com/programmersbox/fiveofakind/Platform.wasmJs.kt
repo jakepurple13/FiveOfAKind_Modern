@@ -3,19 +3,16 @@ package com.programmersbox.fiveofakind
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.materialkolor.rememberDynamicColorScheme
-import io.github.xxfast.kstore.DefaultJson
+import io.github.xxfast.kstore.extensions.getOrEmpty
+import io.github.xxfast.kstore.extensions.updatesOrEmpty
+import io.github.xxfast.kstore.storage.storeOf
 import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.serialization.json.Json
-
-private val defaultJson = Json(DefaultJson) {
-    ignoreUnknownKeys = true
-    prettyPrint = true
-    isLenient = true
-    encodeDefaults = true
-}
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 class WasmPlatform : Platform {
     override val name: String = "Web with Kotlin/Wasm"
@@ -24,31 +21,18 @@ class WasmPlatform : Platform {
 actual fun getPlatform(): Platform = WasmPlatform()
 
 actual class YahtzeeDatabase {
-    init {
-        println("Hello there!")
-    }
-
-    actual fun getHighScores(): Flow<List<ActualYahtzeeScoreItem>> = emptyFlow()
-    actual suspend fun addHighScore(scoreItem: ActualYahtzeeScoreItem) {}
-    actual suspend fun removeHighScore(scoreItem: ActualYahtzeeScoreItem) {}
-    actual fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>> = emptyFlow()
-}
-
-/*actual class YahtzeeDatabase {
 
     private val statsStuff by lazy {
         storeOf<List<ActualYahtzeeScoreStat>>(
             key = "statsStuff",
-            default = emptyList(),
-            format = defaultJson
+            default = emptyList()
         )
     }
 
     private val highScoreStuff by lazy {
         storeOf<List<ActualYahtzeeScoreItem>>(
             key = "yahtzeeScoreStuff",
-            default = emptyList(),
-            format = defaultJson
+            default = emptyList()
         )
     }
 
@@ -120,7 +104,7 @@ actual class YahtzeeDatabase {
     actual fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>> = statsStuff
         .updatesOrEmpty
         .filterNotNull()
-}*/
+}
 
 @Composable
 actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme {
@@ -156,92 +140,7 @@ fun <T> rememberPreference(
     }
 }
 
-/*private val showDotsOnDice by lazy {
-    mutableStateOf(
-        runCatching {
-            localStorage
-                .getItem("showDotsOnDice")
-                ?.toBoolean()
-        }.getOrNull() ?: true
-    )
-}
-
 @Composable
-actual fun rememberShowDotsOnDice(): MutableState<Boolean> = rememberPreference(
-    key = "showDotsOnDice",
-    mutableState = showDotsOnDice,
-    valueToString = { it.toString() }
-)
-
-private val use24HourTime by lazy {
-    mutableStateOf(
-        runCatching {
-            localStorage
-                .getItem("use24HourTime")
-                ?.toBoolean()
-        }.getOrNull() ?: true
-    )
-}
-
-@Composable
-actual fun rememberUse24HourTime(): MutableState<Boolean> = rememberPreference(
-    key = "use24HourTime",
-    mutableState = use24HourTime,
-    valueToString = { it.toString() }
-)
-
-private val isAmoled by lazy {
-    mutableStateOf(
-        runCatching {
-            localStorage
-                .getItem("isAmoled")
-                ?.toBoolean()
-        }.getOrNull() ?: false
-    )
-}
-
-@Composable
-actual fun rememberIsAmoled(): MutableState<Boolean> = rememberPreference(
-    key = "isAmoled",
-    mutableState = isAmoled,
-    valueToString = { it.toString() }
-)
-
-private val themeColor by lazy {
-    mutableStateOf(
-        runCatching {
-            localStorage
-                .getItem("themeColor")
-                ?.let { ThemeColor.valueOf(it) }
-        }.getOrNull() ?: ThemeColor.Dynamic
-    )
-}
-
-@Composable
-actual fun rememberThemeColor(): MutableState<ThemeColor> = rememberPreference(
-    key = "themeColor",
-    mutableState = themeColor,
-    valueToString = { it.name }
-)
-
-private val showInstructions by lazy {
-    mutableStateOf(
-        runCatching {
-            localStorage
-                .getItem("showInstructions")
-                ?.toBoolean()
-        }.getOrNull() ?: true
-    )
-}
-
-@Composable
-actual fun rememberShowInstructions(): MutableState<Boolean> = rememberPreference(
-    key = "showInstructions",
-    mutableState = showInstructions,
-    valueToString = { it.toString() }
-)*/
-
-/*@Composable
 actual fun rememberShowInstructions(): MutableState<Boolean> = rememberSettingsPreferences(
     onGet = { it.showInstructions },
     onSet = { s, v -> s.copy(showInstructions = v) }
@@ -274,8 +173,7 @@ actual fun rememberUse24HourTime(): MutableState<Boolean> = rememberSettingsPref
 private val settingsStuff by lazy {
     storeOf<YahtzeeSettings>(
         key = "settingsStuff",
-        default = YahtzeeSettings(),
-        format = defaultJson
+        default = YahtzeeSettings()
     )
 }
 
@@ -312,102 +210,6 @@ fun <T> rememberSettingsPreferences(
 
             override fun component1() = value
             override fun component2(): (T) -> Unit = { value = it }
-        }
-    }
-}*/
-
-private val themeFlow = SettingPreference(
-    key = "theme",
-    defaultValue = ThemeColor.Dynamic,
-    valueToString = { it.name },
-    valueFromString = { ThemeColor.valueOf(it) }
-)
-
-private val showInstructionsFlow = SettingPreference(
-    key = "showInstructions",
-    defaultValue = true,
-    valueToString = { if (it == true) "true" else "false" },
-    valueFromString = { it.toBooleanStrict() }
-)
-
-private val isAmoledFlow = SettingPreference(
-    key = "isAmoled",
-    defaultValue = false,
-    valueToString = { if (it == true) "true" else "false" },
-    valueFromString = { it.toBooleanStrict() }
-)
-
-private val showDotsOnDiceFlow = SettingPreference(
-    key = "showDotsOnDice",
-    defaultValue = true,
-    valueToString = { if (it == true) "true" else "false" },
-    valueFromString = { it.toBooleanStrict() }
-)
-
-private val use24HourTimeFlow = SettingPreference(
-    key = "use24HourTime",
-    defaultValue = true,
-    valueToString = { if (it == true) "true" else "false" },
-    valueFromString = { it.toBooleanStrict() }
-)
-
-@Composable
-actual fun rememberShowInstructions(): MutableState<Boolean> = showInstructionsFlow.rememberPreference()
-
-@Composable
-actual fun rememberThemeColor(): MutableState<ThemeColor> = themeFlow.rememberPreference()
-
-@Composable
-actual fun rememberIsAmoled(): MutableState<Boolean> = isAmoledFlow.rememberPreference()
-
-@Composable
-actual fun rememberShowDotsOnDice(): MutableState<Boolean> = showDotsOnDiceFlow.rememberPreference()
-
-@Composable
-actual fun rememberUse24HourTime(): MutableState<Boolean> = use24HourTimeFlow.rememberPreference()
-
-open class SettingPreference<T>(
-    private val key: String,
-    defaultValue: T,
-    private val valueToString: (T) -> String,
-    private val valueFromString: (String) -> T,
-) {
-    protected open var state = mutableStateOf(
-        localStorage.getItem(key).let {
-            runCatching { valueFromString(it!!) }.getOrElse { defaultValue }
-        }
-    )
-
-    operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): T {
-        return state.value
-    }
-
-    operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: T) {
-        state.value = value
-        localStorage.setItem(key, valueToString(value))
-    }
-
-    fun asFlow() = snapshotFlow { state.value }
-
-    fun update(value: T) {
-        state.value = value
-        localStorage.setItem(key, valueToString(value))
-    }
-
-    @Composable
-    fun rememberPreference(): MutableState<T> {
-        return remember(state) {
-            object : MutableState<T> {
-                override var value: T
-                    get() = state.value
-                    set(value) {
-                        state.value = value
-                        localStorage.setItem(key, valueToString(value))
-                    }
-
-                override fun component1() = value
-                override fun component2(): (T) -> Unit = { value = it }
-            }
         }
     }
 }
