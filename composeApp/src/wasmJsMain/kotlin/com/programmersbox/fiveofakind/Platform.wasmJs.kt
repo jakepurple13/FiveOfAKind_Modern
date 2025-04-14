@@ -11,6 +11,7 @@ import io.github.xxfast.kstore.storage.storeOf
 import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -104,6 +105,14 @@ actual class YahtzeeDatabase {
     actual fun getHighScoreStats(): Flow<List<ActualYahtzeeScoreStat>> = statsStuff
         .updatesOrEmpty
         .filterNotNull()
+        .map {
+            it.sortedBy {
+                runCatching { HandType.valueOf(it.handType) }
+                    .getOrNull()
+                    ?.ordinal
+                    ?: Int.MAX_VALUE
+            }
+        }
 }
 
 @Composable

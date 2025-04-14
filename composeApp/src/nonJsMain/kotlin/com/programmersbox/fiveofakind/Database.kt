@@ -78,6 +78,12 @@ actual class YahtzeeDatabase(
                     totalPoints = it.totalPoints,
                 )
             }
+                .sortedBy {
+                    runCatching { HandType.valueOf(it.handType) }
+                        .getOrNull()
+                        ?.ordinal
+                        ?: Int.MAX_VALUE
+                }
         }
 }
 
