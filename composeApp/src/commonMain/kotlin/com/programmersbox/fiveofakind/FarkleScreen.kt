@@ -8,7 +8,9 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
@@ -181,7 +183,8 @@ internal fun FarkleScreen(
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .padding(p),
+                .padding(p)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Score display
@@ -302,7 +305,7 @@ internal fun FarkleScreen(
 
             // Available hand types
             AnimatedVisibility(
-                visible = vm.state == FarkleState.Selecting && vm.availableHandTypes.isNotEmpty() && vm.selectedDice.isEmpty(),
+                visible = vm.state == FarkleState.Selecting,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Card(
@@ -343,6 +346,8 @@ internal fun FarkleScreen(
                     }
                 }
             }
+
+            Spacer(Modifier.height(24.dp))
 
             // Selection score
             AnimatedVisibility(vm.selectedDice.isNotEmpty()) {

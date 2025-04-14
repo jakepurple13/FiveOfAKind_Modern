@@ -76,7 +76,13 @@ fun App(
                 YahtzeeScreen(
                     database = database,
                     onAboutClick = { navController.navigate(About) },
-                    onBackClick = { navController.popBackStack(Home, true) },
+                    onBackClick = {
+                        navController.navigate(Home) {
+                            popUpTo(Home) {
+                                inclusive = true
+                            }
+                        }
+                    },
                 )
             }
         }
