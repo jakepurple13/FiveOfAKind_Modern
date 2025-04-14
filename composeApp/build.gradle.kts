@@ -41,6 +41,7 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
+        outputModuleName.set("composeApp")
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -148,10 +149,6 @@ android {
 }
 
 aboutLibraries {
-    android {
-        // Disable the automatic task
-        registerAndroidTasks = false
-    }
     export {
         // Define the output path (including fileName)
         outputPath = file("${project.projectDir.path}/src/commonMain/composeResources/files/aboutlibraries.json")

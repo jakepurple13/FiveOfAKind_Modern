@@ -353,50 +353,58 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
                 end = it.calculateEndPadding(LayoutDirection.Ltr),
                 top = it.calculateTopPadding(),
             )
-        }
-    ) {
-        vm.hand.forEach { dice ->
-            dice(
-                useDots = diceLooks,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .weight(1f)
-                    .aspectRatio(1f, true)
-                    .border(
-                        width = animateDpAsState(targetValue = if (dice in vm.hold) 4.dp else 0.dp).value,
-                        color = animateColorAsState(targetValue = if (dice in vm.hold) Emerald else Color.Transparent).value,
-                        shape = RoundedCornerShape(7.dp)
+        },
+        actions = {
+            vm.hand.forEach { dice ->
+                dice(
+                    useDots = diceLooks,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .weight(1f)
+                        .aspectRatio(1f, true)
+                        .border(
+                            width = animateDpAsState(targetValue = if (dice in vm.hold) 4.dp else 0.dp).value,
+                            color = animateColorAsState(targetValue = if (dice in vm.hold) Emerald else Color.Transparent).value,
+                            shape = RoundedCornerShape(7.dp)
+                        )
+                ) { if (dice in vm.hold) vm.hold.remove(dice) else vm.hold.add(dice) }
+            }
+        },
+        floatingActionButton = {
+            Surface(
+                onClick = vm::reroll,
+                //TODO: && !vm.rolling fixes the double tap feature
+                enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
+                shape = RoundedCornerShape(7.dp),
+                color = if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
+                border = BorderStroke(
+                    4.dp,
+                    animateColorAsState(
+                        when (vm.state) {
+                            YahtzeeState.RollOne -> Emerald
+                            YahtzeeState.RollTwo -> Sunflower
+                            YahtzeeState.RollThree -> Alizarin
+                            YahtzeeState.Stop -> Color.Unspecified
+                        }
+                    ).value
+                ),
+                modifier = Modifier.padding(horizontal = 4.dp)
+            ) {
+                Box(
+                    modifier = Modifier.defaultMinSize(
+                        minWidth = 56.dp,
+                        minHeight = 56.dp
+                    ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        null,
                     )
-            ) { if (dice in vm.hold) vm.hold.remove(dice) else vm.hold.add(dice) }
+                }
+            }
         }
-
-        FilledTonalButton(
-            onClick = vm::reroll,
-            //TODO: && !vm.rolling fixes the double tap feature
-            enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
-            shape = RoundedCornerShape(7.dp),
-            border = BorderStroke(
-                4.dp,
-                animateColorAsState(
-                    when (vm.state) {
-                        YahtzeeState.RollOne -> Emerald
-                        YahtzeeState.RollTwo -> Sunflower
-                        YahtzeeState.RollThree -> Alizarin
-                        YahtzeeState.Stop -> Color.Unspecified
-                    }
-                ).value
-            ),
-            modifier = Modifier
-                .padding(horizontal = 4.dp)
-                .weight(1f)
-                .aspectRatio(1f, true)
-        ) {
-            Icon(
-                Icons.Default.PlayArrow,
-                null,
-            )
-        }
-    }
+    )
 }
 
 @Composable
