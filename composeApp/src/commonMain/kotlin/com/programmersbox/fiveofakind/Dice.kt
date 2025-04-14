@@ -74,20 +74,7 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
         tonalElevation = 4.dp,
         enabled = dice.value != 0,
         border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colorScheme.surface)),
-        modifier = modifier
-            .sizeIn(56.dp)
-        /*.drawBehind {
-
-            val strokeWidth = 10 * density
-            val y = size.height - strokeWidth / 2
-
-            drawLine(
-                Color.Red,
-                Offset(0f, y),
-                Offset(size.width, y),
-                strokeWidth
-            )
-        }*/
+        modifier = modifier.sizeIn(56.dp)
     ) { DiceDotsPattern(dice.value) }
 }
 

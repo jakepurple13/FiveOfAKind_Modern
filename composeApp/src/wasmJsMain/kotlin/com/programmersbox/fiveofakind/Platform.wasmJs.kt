@@ -226,7 +226,7 @@ fun <T> rememberSettingsPreferences(
 private val savedGameStuff by lazy {
     storeOf<SavedYahtzeeGame>(
         key = "savedGameStuff",
-        default = SavedYahtzeeGame()
+        default = null
     )
 }
 
