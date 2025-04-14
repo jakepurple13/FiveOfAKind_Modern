@@ -61,6 +61,12 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
+          arguments: "exportLibraries"
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: current
           arguments: "packageDistributionForCurrentOS"
 
       - name: Upload ${{ matrix.os }} Build

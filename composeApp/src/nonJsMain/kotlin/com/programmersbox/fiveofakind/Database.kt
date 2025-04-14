@@ -98,7 +98,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): YahtzeeDao
 }
 
-@Suppress("NO_ACTUAL_FOR_EXPECT", "KotlinNoActualForExpect")
+@Suppress("NO_ACTUAL_FOR_EXPECT")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase
 }

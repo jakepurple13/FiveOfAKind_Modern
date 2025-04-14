@@ -10,4 +10,5 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.hotReload) apply false
     kotlin("plugin.serialization") version libs.versions.kotlin.get() apply false
+    alias(libs.plugins.aboutLibraries) apply false
 }

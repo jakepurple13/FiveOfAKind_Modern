@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.materialkolor.ktx.from
 import com.materialkolor.palettes.TonalPalette
 import com.materialkolor.rememberDynamicColorScheme
@@ -30,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 
@@ -41,11 +45,32 @@ fun App(
     MaterialTheme(
         colorScheme = buildColorScheme(isSystemInDarkTheme())
     ) {
-        YahtzeeScreen(
-            database = database
-        )
+        val navController = rememberNavController()
+        NavHost(
+            navController = navController,
+            startDestination = Home
+        ) {
+            composable<Home> {
+                YahtzeeScreen(
+                    database = database,
+                    onAboutClick = { navController.navigate(About) },
+                )
+            }
+
+            composable<About> {
+                AboutScreen(
+                    onBack = { navController.popBackStack() },
+                )
+            }
+        }
     }
 }
+
+@Serializable
+data object Home
+
+@Serializable
+data object About
 
 internal typealias ScoreClick = () -> Unit
 
@@ -58,6 +83,7 @@ internal val Alizarin = Color(0xFFe74c3c)
 internal fun YahtzeeScreen(
     vm: YahtzeeViewModel = viewModel { YahtzeeViewModel() },
     database: YahtzeeDatabase,
+    onAboutClick: () -> Unit,
 ) {
     var diceLook by rememberShowDotsOnDice()
     var isUsing24HourTime by rememberUse24HourTime()
@@ -146,6 +172,17 @@ internal fun YahtzeeScreen(
                                             Text(if (target) "24H" else "12H")
                                         }
                                     },
+                                )
+                            }
+                        }
+
+                        item {
+                            OutlinedCard(
+                                onClick = onAboutClick,
+                                shape = MaterialTheme.shapes.extraLarge,
+                            ) {
+                                ListItem(
+                                    headlineContent = { Text("About") },
                                 )
                             }
                         }

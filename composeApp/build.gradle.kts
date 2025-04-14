@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.hotReload)
     kotlin("plugin.serialization")
+    alias(libs.plugins.aboutLibraries)
 }
 
 kotlin {
@@ -92,6 +93,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
             implementation(libs.material.kolor)
+            implementation(libs.aboutlibraries.core)
+            implementation(libs.aboutlibraries.compose.m3) // material 3
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -141,6 +144,17 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+aboutLibraries {
+    android {
+        // Disable the automatic task
+        registerAndroidTasks = false
+    }
+    export {
+        // Define the output path (including fileName)
+        outputPath = file("src/commonMain/composeResources/files/aboutlibraries.json")
     }
 }
 
