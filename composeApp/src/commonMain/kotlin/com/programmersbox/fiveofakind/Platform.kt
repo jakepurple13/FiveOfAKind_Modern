@@ -7,6 +7,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.*
 import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.flow.Flow
 
@@ -77,3 +78,25 @@ expect suspend fun saveYahtzeeGame(game: SavedYahtzeeGame)
 expect suspend fun loadYahtzeeGame(): SavedYahtzeeGame?
 expect suspend fun hasSavedYahtzeeGame(): Boolean
 expect suspend fun deleteSavedYahtzeeGame()
+
+internal fun YahtzeeViewModel.keyEvent(keyEvent: KeyEvent): Boolean {
+    if (keyEvent.type == KeyEventType.KeyUp) return false
+
+    return when (keyEvent.key) {
+        Key.R -> {
+            if (state != YahtzeeState.Stop && !rolling) {
+                reroll()
+            }
+            true
+        }
+
+        Key.One -> toggleDiceHold(0)
+        Key.Two -> toggleDiceHold(1)
+        Key.Three -> toggleDiceHold(2)
+        Key.Four -> toggleDiceHold(3)
+        Key.Five -> toggleDiceHold(4)
+        else -> false
+    }
+}
+
+internal expect fun YahtzeeViewModel.setup()

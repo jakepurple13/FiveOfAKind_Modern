@@ -9,11 +9,15 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import java.io.File
 
 fun main() = application {
-    remember { Settings { "settings.preferences_pb" } }
     Window(
         onCloseRequest = ::exitApplication,
         title = "Five Of A Kind",
+        onKeyEvent = {
+            keyEventFlow.tryEmit(it)
+            false
+        }
     ) {
+        remember { Settings { "settings.preferences_pb" } }
         App(
             database = remember { YahtzeeDatabase(getDatabaseBuilder()) }
         )

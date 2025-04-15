@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -429,9 +431,7 @@ internal fun YahtzeeScreen(
             confirmButton = { TextButton(onClick = vm::resetGame) { Text("Play Again") } },
             dismissButton = {
                 TextButton(
-                    onClick = {
-                        vm.showGameOverDialog = false
-                    }
+                    onClick = { vm.showGameOverDialog = false }
                 ) { Text("Stop Playing") }
             }
         )
@@ -464,6 +464,7 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
                             color = animateColorAsState(targetValue = if (dice in vm.hold) Emerald else Color.Transparent).value,
                             shape = RoundedCornerShape(7.dp)
                         )
+                        .pointerHoverIcon(PointerIcon.Hand)
                 ) { if (dice in vm.hold) vm.hold.remove(dice) else vm.hold.add(dice) }
             }
         },
@@ -485,7 +486,9 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
                         }
                     ).value
                 ),
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .pointerHoverIcon(PointerIcon.Hand)
             ) {
                 Box(
                     modifier = Modifier.defaultMinSize(
@@ -718,7 +721,8 @@ internal fun ScoreButton(
                     else -> MaterialTheme.colorScheme.outline
                 }
             ).value
-        )
+        ),
+        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
     ) { Text("$category: ${animateIntAsState(score).value}") }
 }
 

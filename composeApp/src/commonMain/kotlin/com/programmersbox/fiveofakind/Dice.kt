@@ -45,6 +45,10 @@ internal class Dice(value: Int = Random.nextInt(1..6), @Suppress("unused") val l
         modifier: Modifier = Modifier,
         onClick: () -> Unit = {},
     ) = ShowDice(useDots, modifier, onClick)
+
+    override fun toString(): String {
+        return "Dice(value=$value, location='$location')"
+    }
 }
 
 @Composable

@@ -21,3 +21,5 @@ actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorSc
     isDarkMode -> darkColorScheme()
     else -> lightColorScheme()
 }
+
+internal actual fun YahtzeeViewModel.setup() {}

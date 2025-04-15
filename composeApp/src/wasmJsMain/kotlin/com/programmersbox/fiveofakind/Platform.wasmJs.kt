@@ -3,15 +3,16 @@ package com.programmersbox.fiveofakind
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.KeyEvent
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import com.materialkolor.rememberDynamicColorScheme
 import io.github.xxfast.kstore.extensions.getOrEmpty
 import io.github.xxfast.kstore.extensions.updatesOrEmpty
 import io.github.xxfast.kstore.storage.storeOf
 import kotlinx.browser.localStorage
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -240,4 +241,15 @@ actual suspend fun loadYahtzeeGame(): SavedYahtzeeGame? = savedGameStuff.get()
 
 actual suspend fun saveYahtzeeGame(game: SavedYahtzeeGame) {
     savedGameStuff.set(game)
+}
+
+val keyEventFlow = MutableSharedFlow<KeyEvent>(
+    replay = 1,
+    onBufferOverflow = BufferOverflow.DROP_OLDEST
+)
+
+internal actual fun YahtzeeViewModel.setup() {
+    keyEventFlow
+        .onEach { keyEvent(it) }
+        .launchIn(viewModelScope)
 }

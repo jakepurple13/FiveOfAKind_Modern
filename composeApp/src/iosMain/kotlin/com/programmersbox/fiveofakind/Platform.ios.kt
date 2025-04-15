@@ -16,3 +16,5 @@ actual fun getPlatform(): Platform = IOSPlatform()
 actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorScheme {
     return if (isDarkMode) darkColorScheme() else lightColorScheme()
 }
+
+internal actual fun YahtzeeViewModel.setup() {}

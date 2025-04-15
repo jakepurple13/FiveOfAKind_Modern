@@ -110,4 +110,17 @@ internal class YahtzeeViewModel : ViewModel() {
         showGameOverDialog = true
         viewModelScope.launch { deleteSavedYahtzeeGame() }
     }
+
+    fun toggleDiceHold(index: Int): Boolean {
+        hand
+            .getOrNull(index)
+            ?.also { if (it.value == 0) return false }
+            ?.let { dice -> if (dice in hold) hold.remove(dice) else hold.add(dice) }
+
+        return true
+    }
+
+    init {
+        setup()
+    }
 }
