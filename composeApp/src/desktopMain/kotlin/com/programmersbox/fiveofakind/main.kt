@@ -6,7 +6,6 @@ import androidx.compose.ui.window.application
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import org.jetbrains.compose.reload.DevelopmentEntryPoint
 import java.io.File
 
 fun main() = application {
@@ -15,11 +14,9 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Five Of A Kind",
     ) {
-        DevelopmentEntryPoint {
-            App(
-                database = remember { YahtzeeDatabase(getDatabaseBuilder()) }
-            )
-        }
+        App(
+            database = remember { YahtzeeDatabase(getDatabaseBuilder()) }
+        )
     }
 }
 
