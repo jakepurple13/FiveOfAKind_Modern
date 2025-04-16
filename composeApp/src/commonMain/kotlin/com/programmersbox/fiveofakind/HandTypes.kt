@@ -14,14 +14,57 @@ enum class HandType(val isSmall: Boolean, val displayName: String) {
     Fours(true, "Fours"),
     Fives(true, "Fives"),
     Sixes(true, "Sixes"),
-    ThreeOfAKind(false, "Three of a Kind"),
-    FourOfAKind(false, "Four of a Kind"),
-    FullHouse(false, "Full House"),
-    SmallStraight(false, "Small Straight"),
-    LargeStraight(false, "Large Straight"),
-    FiveOfAKind(false, "Five of a Kind"),
-    Chance(false, "Chance")
+    ThreeOfAKind(false, "Three of a Kind") {
+        override fun getScoreValue(dice: Collection<Dice>): Int = if (canGetScore(dice)) dice.sumOf { it.value } else 0
+        override fun canGetScore(dice: Collection<Dice>): Boolean {
+            val values = dice.groupingBy { it.value }.eachCount().values
+            return 3 in values || 4 in values || 5 in values
+        }
+    },
+    FourOfAKind(false, "Four of a Kind") {
+        override fun getScoreValue(dice: Collection<Dice>): Int = if (canGetScore(dice)) dice.sumOf { it.value } else 0
+        override fun canGetScore(dice: Collection<Dice>): Boolean {
+            val values = dice.groupingBy { it.value }.eachCount().values
+            return 4 in values || 5 in values
+        }
+    },
+    FullHouse(false, "Full House") {
+        override fun getScoreValue(dice: Collection<Dice>): Int = if (canGetScore(dice)) 25 else 0
+        override fun canGetScore(dice: Collection<Dice>): Boolean {
+            val values = dice.groupingBy { it.value }.eachCount().values
+            return 3 in values && 2 in values
+        }
+    },
+    SmallStraight(false, "Small Straight") {
+        override fun getScoreValue(dice: Collection<Dice>): Int = if (canGetScore(dice)) 30 else 0
+        override fun canGetScore(dice: Collection<Dice>): Boolean {
+            val filteredDice = dice.sortedBy { it.value }
+            return longestSequence(filteredDice.toTypedArray()) in 3..4
+        }
+    },
+    LargeStraight(false, "Large Straight") {
+        override fun getScoreValue(dice: Collection<Dice>): Int = if (canGetScore(dice)) 40 else 0
+        override fun canGetScore(dice: Collection<Dice>): Boolean {
+            val filteredDice = dice.sortedBy { it.value }
+            return longestSequence(filteredDice.toTypedArray()) == 4
+        }
+    },
+    FiveOfAKind(false, "Five of a Kind") {
+        override fun getScoreValue(dice: Collection<Dice>): Int = if (canGetScore(dice)) 50 else 0
+        override fun canGetScore(dice: Collection<Dice>): Boolean = 5 in dice.groupingBy { it.value }.eachCount().values
+    },
+    Chance(false, "Chance") {
+        override fun getScoreValue(dice: Collection<Dice>): Int = dice.sumOf { it.value }
+        override fun canGetScore(dice: Collection<Dice>): Boolean = true
+    }
     ;
+
+    open fun getScoreValue(dice: Collection<Dice>): Int = if (isSmall)
+        getSmallNum(dice, ordinal + 1)
+    else
+        error("This should not be called. This is only for small dice. Try using the getScoreValue(Collection<Dice>, HandType) method instead.")
+
+    open fun canGetScore(dice: Collection<Dice>): Boolean = isSmall
 }
 
 internal class YahtzeeScores {
@@ -80,42 +123,20 @@ internal class YahtzeeScores {
                 placedOnes && placedTwos && placedThrees && placedFours && placedFives && placedSixes
     }
 
-    private fun getSmallNum(dice: Collection<Dice>, num: Int): Int = dice.filter { it.value == num }.sumOf { it.value }
-
     fun getSmall(dice: Collection<Dice>, type: HandType) = getSmallNum(dice, type.ordinal + 1).apply {
         scoreList[type] = this
     }
 
-    fun canGetThreeKind(dice: Collection<Dice>): Boolean {
-        val values = dice.groupingBy { it.value }.eachCount().values
-        return 3 in values || 4 in values || 5 in values
-    }
-
-    fun getThreeOfAKind(dice: Collection<Dice>): Int = if (canGetThreeKind(dice)) {
-        dice.sumOf { it.value }
-    } else {
-        0
-    }.apply {
+    fun getThreeOfAKind(dice: Collection<Dice>): Int = HandType.ThreeOfAKind.getScoreValue(dice).apply {
         scoreList[HandType.ThreeOfAKind] = this
     }
 
-    fun canGetFourKind(dice: Collection<Dice>): Boolean {
-        val values = dice.groupingBy { it.value }.eachCount().values
-        return 4 in values || 5 in values
-    }
-
-    fun getFourOfAKind(dice: Collection<Dice>): Int = if (canGetFourKind(dice)) {
-        dice.sumOf { it.value }
-    } else {
-        0
-    }.apply {
+    fun getFourOfAKind(dice: Collection<Dice>): Int = HandType.FourOfAKind.getScoreValue(dice).apply {
         scoreList[HandType.FourOfAKind] = this
     }
 
-    fun canGetYahtzee(dice: Collection<Dice>): Boolean = 5 in dice.groupingBy { it.value }.eachCount().values
-
     fun getYahtzee(dice: Collection<Dice>): Int {
-        val num = if (canGetYahtzee(dice)) {
+        val num = if (HandType.FiveOfAKind.canGetScore(dice)) {
             if (scoreList.containsKey(HandType.FiveOfAKind)) 100 else 50
         } else 0
         return num.apply {
@@ -123,55 +144,42 @@ internal class YahtzeeScores {
         }
     }
 
-    fun canGetFullHouse(dice: Collection<Dice>): Boolean {
-        val values = dice.groupingBy { it.value }.eachCount().values
-        return 3 in values && 2 in values
-    }
-
-    fun getFullHouse(dice: Collection<Dice>): Int = (if (canGetFullHouse(dice)) 25 else 0).apply {
+    fun getFullHouse(dice: Collection<Dice>): Int = HandType.FullHouse.getScoreValue(dice).apply {
         scoreList[HandType.FullHouse] = this
     }
 
-    fun canGetLargeStraight(dice: Collection<Dice>): Boolean {
-        val filteredDice = dice.sortedBy { it.value }
-        return longestSequence(filteredDice.toTypedArray()) == 4
-    }
-
-    fun getLargeStraight(dice: Collection<Dice>): Int = (if (canGetLargeStraight(dice)) 40 else 0).apply {
+    fun getLargeStraight(dice: Collection<Dice>): Int = HandType.LargeStraight.getScoreValue(dice).apply {
         scoreList[HandType.LargeStraight] = this
     }
 
-    fun canGetSmallStraight(dice: Collection<Dice>): Boolean {
-        val filteredDice = dice.sortedBy { it.value }
-        return longestSequence(filteredDice.toTypedArray()) in 3..4
-    }
-
-    fun getSmallStraight(dice: Collection<Dice>): Int = (if (canGetSmallStraight(dice)) 30 else 0).apply {
+    fun getSmallStraight(dice: Collection<Dice>): Int = HandType.SmallStraight.getScoreValue(dice).apply {
         scoreList[HandType.SmallStraight] = this
     }
 
-    fun getChance(dice: Collection<Dice>): Int = dice.sumOf { it.value }.apply {
+    fun getChance(dice: Collection<Dice>): Int = HandType.Chance.getScoreValue(dice).apply {
         scoreList[HandType.Chance] = this
-    }
-
-    private fun longestSequence(a: Array<Dice>): Int {
-        val sorted = a.sortedBy { it.value }
-        var longest = 0
-        var sequence = 0
-        for (i in 1 until sorted.size) {
-            when (sorted[i].value - sorted[i - 1].value) {
-                0 -> Unit/*ignore duplicates*/
-                1 -> sequence += 1
-                else -> if (sequence > longest) {
-                    longest = sequence
-                    sequence = 0
-                }
-            }
-        }
-        return max(longest, sequence)
     }
 
     fun resetScores() {
         scoreList.clear()
     }
+}
+
+private fun getSmallNum(dice: Collection<Dice>, num: Int): Int = dice.filter { it.value == num }.sumOf { it.value }
+
+private fun longestSequence(a: Array<Dice>): Int {
+    val sorted = a.sortedBy { it.value }
+    var longest = 0
+    var sequence = 0
+    for (i in 1 until sorted.size) {
+        when (sorted[i].value - sorted[i - 1].value) {
+            0 -> Unit/*ignore duplicates*/
+            1 -> sequence += 1
+            else -> if (sequence > longest) {
+                longest = sequence
+                sequence = 0
+            }
+        }
+    }
+    return max(longest, sequence)
 }

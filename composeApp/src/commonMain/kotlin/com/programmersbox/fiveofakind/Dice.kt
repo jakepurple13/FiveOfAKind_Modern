@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-internal class Dice(value: Int = Random.nextInt(1..6), @Suppress("unused") val location: String) {
+class Dice(value: Int = Random.nextInt(1..6), @Suppress("unused") val location: String) {
     var value by mutableIntStateOf(value)
 
     suspend fun roll(rollCount: Int = 5) {

@@ -370,17 +370,7 @@ internal fun YahtzeeScreen(
                         isNotRollOneState = vm.state != YahtzeeState.RollOne,
                         containsCheck = { vm.scores.scoreList.containsKey(it) },
                         scoreGet = { vm.scores.scoreList.getOrElse(it) { 0 } },
-                        canGetHand = {
-                            when (it) {
-                                HandType.ThreeOfAKind -> vm.scores.canGetThreeKind(vm.hand)
-                                HandType.FourOfAKind -> vm.scores.canGetFourKind(vm.hand)
-                                HandType.FullHouse -> vm.scores.canGetFullHouse(vm.hand)
-                                HandType.SmallStraight -> vm.scores.canGetSmallStraight(vm.hand)
-                                HandType.LargeStraight -> vm.scores.canGetLargeStraight(vm.hand)
-                                HandType.FiveOfAKind -> vm.scores.canGetYahtzee(vm.hand)
-                                else -> false
-                            }
-                        },
+                        canGetHand = { it.canGetScore(vm.hand) },
                         onThreeKindClick = vm::placeThreeOfKind,
                         onFourKindClick = vm::placeFourOfKind,
                         onFullHouseClick = vm::placeFullHouse,
@@ -550,58 +540,70 @@ internal fun SmallScores(
             else -> Color.Transparent
         }
 
-        ScoreButton(
+        SmallScoreItem(
             category = "Ones",
             enabled = !containsCheck(HandType.Ones),
             score = scoreGet(HandType.Ones),
             canScore = canScore(1) && !isRolling,
             customBorderColor = scoreColor(1),
-            onClick = onOnesClick
+            onClick = onOnesClick,
+            handType = HandType.Ones,
+            hand = hand,
         )
 
-        ScoreButton(
+        SmallScoreItem(
             category = "Twos",
             enabled = !containsCheck(HandType.Twos),
             score = scoreGet(HandType.Twos),
             canScore = canScore(2) && !isRolling,
             customBorderColor = scoreColor(2),
-            onClick = onTwosClick
+            onClick = onTwosClick,
+            handType = HandType.Twos,
+            hand = hand,
         )
 
-        ScoreButton(
+        SmallScoreItem(
             category = "Threes",
             enabled = !containsCheck(HandType.Threes),
             score = scoreGet(HandType.Threes),
             canScore = canScore(3) && !isRolling,
             customBorderColor = scoreColor(3),
-            onClick = onThreesClick
+            onClick = onThreesClick,
+            handType = HandType.Threes,
+            hand = hand,
         )
 
-        ScoreButton(
+        SmallScoreItem(
             category = "Fours",
             enabled = !containsCheck(HandType.Fours),
             score = scoreGet(HandType.Fours),
             canScore = canScore(4) && !isRolling,
             customBorderColor = scoreColor(4),
-            onClick = onFoursClick
+            onClick = onFoursClick,
+            handType = HandType.Fours,
+            hand = hand,
         )
 
-        ScoreButton(
+        SmallScoreItem(
             category = "Fives",
             enabled = !containsCheck(HandType.Fives),
             score = scoreGet(HandType.Fives),
             canScore = canScore(5) && !isRolling,
             customBorderColor = scoreColor(5),
-            onClick = onFivesClick
+            onClick = onFivesClick,
+            handType = HandType.Fives,
+            hand = hand,
         )
 
-        ScoreButton(
+        SmallScoreItem(
             category = "Sixes",
             enabled = !containsCheck(HandType.Sixes),
             score = scoreGet(HandType.Sixes),
             canScore = canScore(6) && !isRolling,
             customBorderColor = scoreColor(6),
-            onClick = onSixesClick
+            onClick = onSixesClick,
+            handType = HandType.Sixes,
+            hand = hand,
         )
 
         AnimatedVisibility(hasBonus) {
@@ -613,6 +615,40 @@ internal fun SmallScores(
             Text("Small Score: ${score + 35} ($score)")
         } else {
             Text("Small Score: ${animateIntAsState(smallScore).value}")
+        }
+    }
+}
+
+@Composable
+private fun SmallScoreItem(
+    handType: HandType,
+    hand: List<Dice>,
+    score: Int,
+    category: String,
+    customBorderColor: Color = Emerald,
+    enabled: Boolean,
+    canScore: Boolean = false,
+    onClick: ScoreClick,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        ScoreButton(
+            category = category,
+            enabled = enabled,
+            score = score,
+            canScore = canScore,
+            customBorderColor = customBorderColor,
+            onClick = onClick
+        )
+
+        AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
+            Text(
+                animateIntAsState(handType.getScoreValue(hand)).value.toString(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
         }
     }
 }
@@ -639,64 +675,110 @@ internal fun LargeScores(
         modifier = modifier,
         horizontalAlignment = Alignment.End
     ) {
-        ScoreButton(
+        LargeScoreItem(
             category = "Three of a Kind",
             enabled = !containsCheck(HandType.ThreeOfAKind),
             score = scoreGet(HandType.ThreeOfAKind),
             canScore = canGetHand(HandType.ThreeOfAKind) && isNotRollOneState && !isRolling,
-            onClick = onThreeKindClick
+            onClick = onThreeKindClick,
+            handType = HandType.ThreeOfAKind,
+            hand = hand,
         )
 
-        ScoreButton(
+        LargeScoreItem(
             category = "Four of a Kind",
             enabled = !containsCheck(HandType.FourOfAKind),
             score = scoreGet(HandType.FourOfAKind),
             canScore = canGetHand(HandType.FourOfAKind) && isNotRollOneState && !isRolling,
-            onClick = onFourKindClick
+            onClick = onFourKindClick,
+            handType = HandType.FourOfAKind,
+            hand = hand,
         )
 
-        ScoreButton(
+        LargeScoreItem(
             category = "Full House",
             enabled = !containsCheck(HandType.FullHouse),
             score = scoreGet(HandType.FullHouse),
             canScore = canGetHand(HandType.FullHouse) && isNotRollOneState && !isRolling,
-            onClick = onFullHouseClick
+            onClick = onFullHouseClick,
+            handType = HandType.FullHouse,
+            hand = hand,
         )
 
-        ScoreButton(
+        LargeScoreItem(
             category = "Small Straight",
             enabled = !containsCheck(HandType.SmallStraight),
             score = scoreGet(HandType.SmallStraight),
             canScore = canGetHand(HandType.SmallStraight) && isNotRollOneState && !isRolling,
-            onClick = onSmallStraightClick
+            onClick = onSmallStraightClick,
+            handType = HandType.SmallStraight,
+            hand = hand,
         )
 
-        ScoreButton(
+        LargeScoreItem(
             category = "Large Straight",
             enabled = !containsCheck(HandType.LargeStraight),
             score = scoreGet(HandType.LargeStraight),
             canScore = canGetHand(HandType.LargeStraight) && isNotRollOneState && !isRolling,
-            onClick = onLargeStraightClick
+            onClick = onLargeStraightClick,
+            handType = HandType.LargeStraight,
+            hand = hand,
         )
 
-        ScoreButton(
+        LargeScoreItem(
             category = "Five of a Kind",
             enabled = !containsCheck(HandType.FiveOfAKind) ||
                     canGetHand(HandType.FiveOfAKind) &&
                     hand.none { it.value == 0 },
             score = scoreGet(HandType.FiveOfAKind),
             canScore = canGetHand(HandType.FiveOfAKind) && isNotRollOneState && !isRolling,
-            onClick = onYahtzeeClick
+            onClick = onYahtzeeClick,
+            handType = HandType.FiveOfAKind,
+            hand = hand,
         )
 
-        ScoreButton(
+        LargeScoreItem(
             category = "Chance",
             enabled = !containsCheck(HandType.Chance),
             score = scoreGet(HandType.Chance),
-            onClick = onChanceClick
+            onClick = onChanceClick,
+            handType = HandType.Chance,
+            hand = hand,
         )
 
         Text("Large Score: ${animateIntAsState(largeScore).value}")
+    }
+}
+
+@Composable
+private fun LargeScoreItem(
+    handType: HandType,
+    hand: List<Dice>,
+    score: Int,
+    category: String,
+    enabled: Boolean,
+    canScore: Boolean = false,
+    onClick: ScoreClick,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
+            Text(
+                animateIntAsState(handType.getScoreValue(hand)).value.toString(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
+        }
+
+        ScoreButton(
+            category = category,
+            enabled = enabled,
+            score = score,
+            canScore = canScore,
+            onClick = onClick
+        )
     }
 }
 
