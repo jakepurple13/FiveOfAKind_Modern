@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -247,6 +248,17 @@ internal fun YahtzeeScreen(
                                 ) { Text("Stats") }
                             },
                         )
+                    },
+                    bottomBar = {
+                        BottomAppBar {
+                            Text(
+                                getPlatform().name,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
                     }
                 ) { p ->
                     LazyColumn(
@@ -387,12 +399,6 @@ internal fun YahtzeeScreen(
                 }
 
                 Text("Total Score: ${animateIntAsState(vm.scores.totalScore).value}")
-
-                Text(
-                    getPlatform().name,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                )
             }
         }
     }
