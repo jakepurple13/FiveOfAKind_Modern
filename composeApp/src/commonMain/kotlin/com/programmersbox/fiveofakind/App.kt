@@ -508,7 +508,9 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
                     onClick = vm::reroll,
                     //TODO: && !vm.rolling fixes the double tap feature
                     enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
-                    modifier = Modifier.fillMaxWidth(.5f)
+                    modifier = Modifier
+                        .fillMaxWidth(.5f)
+                        .pointerHoverIcon(PointerIcon.Hand)
                 ) { Text("Roll Dice") }
 
                 FilledIconButton(
