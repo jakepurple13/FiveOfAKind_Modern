@@ -36,7 +36,28 @@ class Dice(value: Int = Random.nextInt(1..6), @Suppress("unused") val location: 
         useDots: Boolean,
         modifier: Modifier = Modifier,
         onClick: () -> Unit = {},
-    ) = if (useDots) DiceDots(this, modifier, onClick) else Dice(this, modifier, onClick)
+    ) {
+        Surface(
+            onClick = onClick,
+            shape = RoundedCornerShape(7.dp),
+            tonalElevation = 4.dp,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            enabled = value != 0,
+            border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colorScheme.surface)),
+            modifier = modifier.size(56.dp)
+        ) {
+            if (useDots) {
+                DiceDotsPattern(value)
+            } else {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = if (value == 0) "" else value.toString(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+    }
 
     // Operator function as a shorthand for ShowDice
     @Composable
@@ -57,6 +78,7 @@ internal fun Dice(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit
         onClick = onClick,
         shape = RoundedCornerShape(7.dp),
         tonalElevation = 4.dp,
+        color = MaterialTheme.colorScheme.primaryContainer,
         enabled = dice.value != 0,
         border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colorScheme.surface)),
         modifier = modifier.size(56.dp)
@@ -76,6 +98,7 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
         onClick = onClick,
         shape = RoundedCornerShape(7.dp),
         tonalElevation = 4.dp,
+        color = MaterialTheme.colorScheme.primaryContainer,
         enabled = dice.value != 0,
         border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colorScheme.surface)),
         modifier = modifier.sizeIn(56.dp)

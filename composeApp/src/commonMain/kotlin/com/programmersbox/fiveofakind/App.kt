@@ -10,7 +10,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -432,70 +435,80 @@ internal fun YahtzeeScreen(
 @Composable
 internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
     val isAmoled by rememberIsAmoled()
-    BottomAppBar(
-        containerColor = if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
-        contentPadding = BottomAppBarDefaults.ContentPadding.let {
-            PaddingValues(
-                bottom = it.calculateTopPadding(),
-                start = it.calculateStartPadding(LayoutDirection.Ltr),
-                end = it.calculateEndPadding(LayoutDirection.Ltr),
-                top = it.calculateTopPadding(),
-            )
-        },
-        actions = {
-            vm.hand.forEach { dice ->
-                dice(
-                    useDots = diceLooks,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .weight(1f)
-                        .aspectRatio(1f, true)
-                        .border(
-                            width = animateDpAsState(targetValue = if (dice in vm.hold) 4.dp else 0.dp).value,
-                            color = animateColorAsState(targetValue = if (dice in vm.hold) Emerald else Color.Transparent).value,
-                            shape = RoundedCornerShape(7.dp)
+    Surface(
+        color = if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+            bottomEnd = 0.dp,
+            bottomStart = 0.dp
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .padding(
+                    BottomAppBarDefaults.ContentPadding.let {
+                        PaddingValues(
+                            bottom = it.calculateTopPadding(),
+                            start = it.calculateStartPadding(LayoutDirection.Ltr),
+                            end = it.calculateEndPadding(LayoutDirection.Ltr),
+                            top = it.calculateTopPadding(),
                         )
-                        .pointerHoverIcon(PointerIcon.Hand)
-                ) { if (dice in vm.hold) vm.hold.remove(dice) else vm.hold.add(dice) }
-            }
-        },
-        floatingActionButton = {
-            Surface(
-                onClick = vm::reroll,
-                //TODO: && !vm.rolling fixes the double tap feature
-                enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
-                shape = RoundedCornerShape(7.dp),
-                color = if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
-                border = BorderStroke(
-                    4.dp,
-                    animateColorAsState(
-                        when (vm.state) {
-                            YahtzeeState.RollOne -> Emerald
-                            YahtzeeState.RollTwo -> Sunflower
-                            YahtzeeState.RollThree -> Alizarin
-                            YahtzeeState.Stop -> Color.Unspecified
-                        }
-                    ).value
-                ),
+                    },
+                )
+                .padding(8.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .pointerHoverIcon(PointerIcon.Hand)
+                    .height(56.dp)
+                    .fillMaxWidth(),
             ) {
-                Box(
-                    modifier = Modifier.defaultMinSize(
-                        minWidth = 56.dp,
-                        minHeight = 56.dp
-                    ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        Icons.Default.PlayArrow,
-                        null,
-                    )
+                vm.hand.forEach { dice ->
+                    dice(
+                        useDots = diceLooks,
+                        modifier = Modifier
+                            .border(
+                                width = animateDpAsState(targetValue = if (dice in vm.hold) 4.dp else 0.dp).value,
+                                color = animateColorAsState(targetValue = if (dice in vm.hold) Emerald else Color.Transparent).value,
+                                shape = RoundedCornerShape(7.dp)
+                            )
+                            .pointerHoverIcon(PointerIcon.Hand)
+                    ) { if (dice in vm.hold) vm.hold.remove(dice) else vm.hold.add(dice) }
                 }
             }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Button(
+                    onClick = vm::reroll,
+                    //TODO: && !vm.rolling fixes the double tap feature
+                    enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
+                    modifier = Modifier.fillMaxWidth(.5f)
+                ) { Text("Roll Dice") }
+
+                FilledIconButton(
+                    onClick = {},
+                    enabled = vm.state == YahtzeeState.RollOne,
+                ) { Text("1") }
+
+                FilledIconButton(
+                    onClick = {},
+                    enabled = vm.state == YahtzeeState.RollOne || vm.state == YahtzeeState.RollTwo,
+                ) { Text("2") }
+
+                FilledIconButton(
+                    onClick = {},
+                    enabled = vm.state != YahtzeeState.Stop
+                ) { Text("3") }
+            }
         }
-    )
+    }
 }
 
 @Composable
