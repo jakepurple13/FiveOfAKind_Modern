@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -356,11 +355,18 @@ internal fun YahtzeeScreen(
                 )
             },
         ) { p ->
+            val isAmoled by rememberIsAmoled()
+
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(16.dp)
-                    .padding(p),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(p)
+                    .background(
+                        if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
+                        MaterialTheme.shapes.extraLarge
+                    )
+                    .padding(16.dp)
             ) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
                     SmallScores(
@@ -378,6 +384,13 @@ internal fun YahtzeeScreen(
                         onSixesClick = vm::placeSixes,
                         modifier = Modifier.weight(1f)
                     )
+
+                    VerticalDivider(
+                        modifier = Modifier
+                            .fillMaxHeight(0.75f)
+                            .align(Alignment.CenterVertically)
+                    )
+
                     LargeScores(
                         largeScore = vm.scores.largeScore,
                         isRolling = vm.rolling,
@@ -454,23 +467,13 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
-                .padding(
-                    BottomAppBarDefaults.ContentPadding.let {
-                        PaddingValues(
-                            bottom = it.calculateTopPadding(),
-                            start = it.calculateStartPadding(LayoutDirection.Ltr),
-                            end = it.calculateEndPadding(LayoutDirection.Ltr),
-                            top = it.calculateTopPadding(),
-                        )
-                    },
-                )
+                .padding(BottomAppBarDefaults.ContentPadding)
                 .padding(8.dp)
+                .windowInsetsPadding(BottomAppBarDefaults.windowInsets)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .height(56.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 vm.hand.forEach { dice ->
                     dice(
@@ -693,8 +696,9 @@ internal fun LargeScores(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.End
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.End,
+        modifier = modifier
     ) {
         LargeScoreItem(
             category = "Three of a Kind",
@@ -814,7 +818,7 @@ internal fun ScoreButton(
     score: Int,
     onClick: () -> Unit,
 ) {
-    OutlinedButton(
+    OutlinedCard(
         onClick = onClick,
         enabled = enabled,
         border = BorderStroke(
@@ -828,7 +832,13 @@ internal fun ScoreButton(
             ).value
         ),
         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
-    ) { Text("$category: ${animateIntAsState(score).value}") }
+    ) {
+        Text(
+            "$category: ${animateIntAsState(score).value}",
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(8.dp),
+        )
+    }
 }
 
 @OptIn(ExperimentalTime::class)
