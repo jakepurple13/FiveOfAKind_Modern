@@ -52,6 +52,9 @@ enum class HandType(val isSmall: Boolean, val displayName: String) {
     FiveOfAKind(false, "Five of a Kind") {
         override fun getScoreValue(dice: Collection<Dice>): Int = if (canGetScore(dice)) 50 else 0
         override fun canGetScore(dice: Collection<Dice>): Boolean = 5 in dice.groupingBy { it.value }.eachCount().values
+        override fun getTrueScoreValue(dice: Collection<Dice>, hasAlready: Boolean): Int = if (canGetScore(dice))
+            if (hasAlready) 100 else 50
+        else 0
     },
     Chance(false, "Chance") {
         override fun getScoreValue(dice: Collection<Dice>): Int = dice.sumOf { it.value }
@@ -65,6 +68,8 @@ enum class HandType(val isSmall: Boolean, val displayName: String) {
         error("This should not be called. This is only for small dice. Try using the getScoreValue(Collection<Dice>, HandType) method instead.")
 
     open fun canGetScore(dice: Collection<Dice>): Boolean = isSmall
+
+    open fun getTrueScoreValue(dice: Collection<Dice>, hasAlready: Boolean): Int = getScoreValue(dice)
 }
 
 internal class YahtzeeScores {
@@ -136,13 +141,13 @@ internal class YahtzeeScores {
     }
 
     fun getYahtzee(dice: Collection<Dice>): Int {
-        val num = if (HandType.FiveOfAKind.canGetScore(dice)) {
-            if (scoreList.containsKey(HandType.FiveOfAKind)) 100 else 50
-        } else 0
-        return num.apply {
+        return yahtzeeScore(dice).apply {
             scoreList[HandType.FiveOfAKind] = scoreList.getOrElse(HandType.FiveOfAKind) { 0 } + this
         }
     }
+
+    fun yahtzeeScore(dice: Collection<Dice>) =
+        HandType.FiveOfAKind.getTrueScoreValue(dice, scoreList.containsKey(HandType.FiveOfAKind))
 
     fun getFullHouse(dice: Collection<Dice>): Int = HandType.FullHouse.getScoreValue(dice).apply {
         scoreList[HandType.FullHouse] = this

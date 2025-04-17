@@ -367,6 +367,7 @@ internal fun YahtzeeScreen(
                         largeScore = vm.scores.largeScore,
                         isRolling = vm.rolling,
                         hand = vm.hand,
+                        scores = vm.scores,
                         isNotRollOneState = vm.state != YahtzeeState.RollOne,
                         containsCheck = { vm.scores.scoreList.containsKey(it) },
                         scoreGet = { vm.scores.scoreList.getOrElse(it) { 0 } },
@@ -658,6 +659,7 @@ internal fun LargeScores(
     largeScore: Int,
     isRolling: Boolean,
     hand: List<Dice>,
+    scores: YahtzeeScores,
     isNotRollOneState: Boolean,
     containsCheck: (HandType) -> Boolean,
     scoreGet: (HandType) -> Int,
@@ -734,6 +736,7 @@ internal fun LargeScores(
             canScore = canGetHand(HandType.FiveOfAKind) && isNotRollOneState && !isRolling,
             onClick = onYahtzeeClick,
             handType = HandType.FiveOfAKind,
+            getScore = { scores.yahtzeeScore(hand) },
             hand = hand,
         )
 
@@ -754,6 +757,7 @@ internal fun LargeScores(
 private fun LargeScoreItem(
     handType: HandType,
     hand: List<Dice>,
+    getScore: () -> Int = { handType.getScoreValue(hand) },
     score: Int,
     category: String,
     enabled: Boolean,
@@ -766,7 +770,7 @@ private fun LargeScoreItem(
     ) {
         AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
             Text(
-                animateIntAsState(handType.getScoreValue(hand)).value.toString(),
+                animateIntAsState(getScore()).value.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outlineVariant,
             )
