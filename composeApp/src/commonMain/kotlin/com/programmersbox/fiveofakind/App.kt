@@ -506,7 +506,7 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
             ) {
                 Button(
                     onClick = vm::reroll,
-                    //TODO: && !vm.rolling fixes the double tap feature
+                    //&& !vm.rolling fixes the double tap feature
                     enabled = vm.state != YahtzeeState.Stop && (!vm.rolling || !IS_NOT_DEBUG),
                     modifier = Modifier
                         .fillMaxWidth(.5f)
@@ -642,15 +642,36 @@ internal fun SmallScores(
             hand = hand,
         )
 
-        AnimatedVisibility(hasBonus) {
-            Text("+35 for >= 63")
+        val score by animateIntAsState(targetValue = smallScore)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text("+35 Bonus")
+
+            Box(
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(
+                    progress = { score / 63f },
+                    color = animateColorAsState(
+                        if (score > 63) Emerald else ProgressIndicatorDefaults.circularColor,
+                    ).value,
+                    modifier = Modifier.size(48.dp),
+                )
+
+                Text(
+                    "$score/63",
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
         }
 
         if (smallScore >= 63) {
-            val score by animateIntAsState(targetValue = smallScore)
             Text("Small Score: ${score + 35} ($score)")
         } else {
-            Text("Small Score: ${animateIntAsState(smallScore).value}")
+            Text("Small Score: $score")
         }
     }
 }
