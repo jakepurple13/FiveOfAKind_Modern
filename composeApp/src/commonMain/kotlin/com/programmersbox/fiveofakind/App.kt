@@ -230,7 +230,7 @@ internal fun YahtzeeScreen(
             ) {
                 Scaffold(
                     topBar = {
-                        TopAppBar(
+                        CenterAlignedTopAppBar(
                             title = { Text("High Scores") },
                             actions = {
                                 Text(
