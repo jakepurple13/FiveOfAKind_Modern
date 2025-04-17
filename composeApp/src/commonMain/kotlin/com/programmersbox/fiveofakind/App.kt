@@ -368,7 +368,10 @@ internal fun YahtzeeScreen(
                     )
                     .padding(16.dp)
             ) {
-                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.weight(.9f),
+                ) {
                     SmallScores(
                         smallScore = vm.scores.smallScore,
                         hand = vm.hand,
@@ -382,7 +385,9 @@ internal fun YahtzeeScreen(
                         onFoursClick = vm::placeFours,
                         onFivesClick = vm::placeFives,
                         onSixesClick = vm::placeSixes,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
                     )
 
                     VerticalDivider(
@@ -407,11 +412,16 @@ internal fun YahtzeeScreen(
                         onLargeStraightClick = vm::placeLargeStraight,
                         onYahtzeeClick = vm::placeYahtzee,
                         onChanceClick = vm::placeChance,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
                     )
                 }
 
-                Text("Total Score: ${animateIntAsState(vm.scores.totalScore).value}")
+                Text(
+                    "Total Score: ${animateIntAsState(vm.scores.totalScore).value}",
+                    modifier = Modifier.weight(.1f),
+                )
             }
         }
     }
@@ -537,8 +547,9 @@ internal fun SmallScores(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.Start
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier
     ) {
         val groupedCheck by remember {
             derivedStateOf {
@@ -696,12 +707,12 @@ internal fun LargeScores(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.End,
         modifier = modifier
     ) {
         LargeScoreItem(
-            category = "Three of a Kind",
+            category = "Three Kind",
             enabled = !containsCheck(HandType.ThreeOfAKind),
             score = scoreGet(HandType.ThreeOfAKind),
             canScore = canGetHand(HandType.ThreeOfAKind) && isNotRollOneState && !isRolling,
@@ -711,7 +722,7 @@ internal fun LargeScores(
         )
 
         LargeScoreItem(
-            category = "Four of a Kind",
+            category = "Four Kind",
             enabled = !containsCheck(HandType.FourOfAKind),
             score = scoreGet(HandType.FourOfAKind),
             canScore = canGetHand(HandType.FourOfAKind) && isNotRollOneState && !isRolling,
@@ -751,7 +762,7 @@ internal fun LargeScores(
         )
 
         LargeScoreItem(
-            category = "Five of a Kind",
+            category = "Five Kind",
             enabled = !containsCheck(HandType.FiveOfAKind) ||
                     canGetHand(HandType.FiveOfAKind) &&
                     hand.none { it.value == 0 },
@@ -835,8 +846,8 @@ internal fun ScoreButton(
     ) {
         Text(
             "$category: ${animateIntAsState(score).value}",
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(8.dp),
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(16.dp),
         )
     }
 }
