@@ -356,6 +356,7 @@ internal fun YahtzeeScreen(
             },
         ) { p ->
             val isAmoled by rememberIsAmoled()
+            val scrollState = rememberScrollState()
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -393,6 +394,7 @@ internal fun YahtzeeScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
+                            .verticalScroll(scrollState)
                     )
 
                     VerticalDivider(
@@ -419,6 +421,7 @@ internal fun YahtzeeScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
+                            .verticalScroll(scrollState)
                     )
                 }
 
