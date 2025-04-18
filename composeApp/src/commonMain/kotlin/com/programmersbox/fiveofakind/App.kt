@@ -360,7 +360,8 @@ internal fun YahtzeeScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
                     .padding(p)
                     .background(
                         animateColorAsState(
@@ -380,7 +381,6 @@ internal fun YahtzeeScreen(
                     SmallScores(
                         smallScore = vm.scores.smallScore,
                         hand = vm.hand,
-                        hasBonus = vm.scores.hasBonus,
                         isRolling = vm.rolling,
                         containsCheck = { vm.scores.scoreList.containsKey(it) },
                         scoreGet = { vm.scores.scoreList.getOrElse(it) { 0 } },
@@ -402,7 +402,6 @@ internal fun YahtzeeScreen(
                     )
 
                     LargeScores(
-                        largeScore = vm.scores.largeScore,
                         isRolling = vm.rolling,
                         hand = vm.hand,
                         scores = vm.scores,
@@ -423,10 +422,24 @@ internal fun YahtzeeScreen(
                     )
                 }
 
-                Text(
-                    "Total Score: ${animateIntAsState(vm.scores.totalScore).value}",
-                    modifier = Modifier.weight(.1f),
-                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(.1f),
+                ) {
+
+                    val smallScore by animateIntAsState(vm.scores.smallScore)
+
+                    Text("Total: ${if (vm.scores.hasBonus) "${smallScore + 35} ($smallScore)" else smallScore}")
+
+                    Text(
+                        "Total Score: ${animateIntAsState(vm.scores.totalScore).value}",
+                    )
+
+                    Text("Total: ${animateIntAsState(vm.scores.largeScore).value}")
+                }
+
             }
         }
     }
@@ -547,7 +560,6 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
 internal fun SmallScores(
     smallScore: Int,
     hand: List<Dice>,
-    hasBonus: Boolean,
     isRolling: Boolean,
     containsCheck: (HandType) -> Boolean,
     scoreGet: (HandType) -> Int,
@@ -663,26 +675,24 @@ internal fun SmallScores(
 
             Box(
                 contentAlignment = Alignment.Center,
+                modifier = Modifier.size(48.dp)
             ) {
                 CircularProgressIndicator(
                     progress = { score / 63f },
                     color = animateColorAsState(
                         if (score > 63) Emerald else ProgressIndicatorDefaults.circularColor,
                     ).value,
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.Center),
                 )
 
                 Text(
                     "$score/63",
                     style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
-        }
-
-        if (hasBonus) {
-            Text("Small Score: ${score + 35} ($score)")
-        } else {
-            Text("Small Score: $score")
         }
     }
 }
@@ -723,7 +733,6 @@ private fun SmallScoreItem(
 
 @Composable
 internal fun LargeScores(
-    largeScore: Int,
     isRolling: Boolean,
     hand: List<Dice>,
     scores: YahtzeeScores,
@@ -816,8 +825,6 @@ internal fun LargeScores(
             handType = HandType.Chance,
             hand = hand,
         )
-
-        Text("Large Score: ${animateIntAsState(largeScore).value}")
     }
 }
 
