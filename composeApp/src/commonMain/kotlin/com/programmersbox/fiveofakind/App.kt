@@ -212,6 +212,9 @@ internal fun YahtzeeScreen(
         )
     }
 
+    val isAmoled by rememberIsAmoled()
+    val scrollState = rememberScrollState()
+
     var instructions by YahtzeeInstructions()
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -355,15 +358,12 @@ internal fun YahtzeeScreen(
                 )
             },
         ) { p ->
-            val isAmoled by rememberIsAmoled()
-            val scrollState = rememberScrollState()
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .padding(p)
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp)
-                    .padding(p)
                     .background(
                         animateColorAsState(
                             if (isAmoled)
@@ -373,7 +373,7 @@ internal fun YahtzeeScreen(
                         ).value,
                         MaterialTheme.shapes.extraLarge
                     )
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -436,9 +436,7 @@ internal fun YahtzeeScreen(
 
                     Text("Total: ${if (vm.scores.hasBonus) "${smallScore + 35} ($smallScore)" else smallScore}")
 
-                    Text(
-                        "Total Score: ${animateIntAsState(vm.scores.totalScore).value}",
-                    )
+                    Text("Total Score: ${animateIntAsState(vm.scores.totalScore).value}")
 
                     Text("Total: ${animateIntAsState(vm.scores.largeScore).value}")
                 }
@@ -714,6 +712,9 @@ private fun SmallScoreItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .animateContentSize()
+            .fillMaxWidth(.9f)
     ) {
         ScoreButton(
             category = category,
@@ -721,7 +722,8 @@ private fun SmallScoreItem(
             score = score,
             canScore = canScore,
             customBorderColor = customBorderColor,
-            onClick = onClick
+            onClick = onClick,
+            modifier = Modifier.weight(.9f),
         )
 
         AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
@@ -729,6 +731,7 @@ private fun SmallScoreItem(
                 animateIntAsState(handType.getScoreValue(hand)).value.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.weight(.1f)
             )
         }
     }
@@ -845,12 +848,16 @@ private fun LargeScoreItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .animateContentSize()
+            .fillMaxWidth(.9f)
     ) {
         AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
             Text(
                 animateIntAsState(getScore()).value.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.weight(.1f)
             )
         }
 
@@ -859,7 +866,8 @@ private fun LargeScoreItem(
             enabled = enabled,
             score = score,
             canScore = canScore,
-            onClick = onClick
+            onClick = onClick,
+            modifier = Modifier.weight(.9f),
         )
     }
 }
@@ -872,6 +880,7 @@ internal fun ScoreButton(
     customBorderColor: Color = Emerald,
     score: Int,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     OutlinedCard(
         onClick = onClick,
@@ -886,13 +895,28 @@ internal fun ScoreButton(
                 }
             ).value
         ),
-        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
+        modifier = modifier.pointerHoverIcon(PointerIcon.Hand)
     ) {
-        Text(
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            Text(
+                category,
+                style = MaterialTheme.typography.labelSmall
+            )
+            Text(
+                animateIntAsState(score).value.toString(),
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+        /*Text(
             "$category: ${animateIntAsState(score).value}",
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(16.dp),
-        )
+        )*/
     }
 }
 
