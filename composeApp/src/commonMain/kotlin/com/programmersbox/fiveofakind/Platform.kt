@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
+import com.materialkolor.ktx.animateColorScheme
 import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.flow.Flow
 
@@ -50,28 +51,30 @@ fun buildColorScheme(
 ): ColorScheme {
     val themeColor by rememberThemeColor()
     val isAmoled by rememberIsAmoled()
-    return key(themeColor) {
-        when (themeColor) {
-            ThemeColor.Dynamic -> colorSchemeSetup(darkTheme, dynamicColor).let {
-                if (isAmoled && darkTheme) {
-                    it.copy(
-                        surface = Color.Black,
-                        onSurface = Color.White,
-                        background = Color.Black,
-                        onBackground = Color.White
-                    )
-                } else {
-                    it
+    return animateColorScheme(
+        key(themeColor) {
+            when (themeColor) {
+                ThemeColor.Dynamic -> colorSchemeSetup(darkTheme, dynamicColor).let {
+                    if (isAmoled && darkTheme) {
+                        it.copy(
+                            surface = Color.Black,
+                            onSurface = Color.White,
+                            background = Color.Black,
+                            onBackground = Color.White
+                        )
+                    } else {
+                        it
+                    }
                 }
-            }
 
-            else -> rememberDynamicColorScheme(
-                seedColor = themeColor.seedColor,
-                isDark = darkTheme,
-                isAmoled = isAmoled
-            )
+                else -> rememberDynamicColorScheme(
+                    seedColor = themeColor.seedColor,
+                    isDark = darkTheme,
+                    isAmoled = isAmoled
+                )
+            }
         }
-    }
+    )
 }
 
 expect suspend fun saveYahtzeeGame(game: SavedYahtzeeGame)

@@ -363,7 +363,12 @@ internal fun YahtzeeScreen(
                     .padding(16.dp)
                     .padding(p)
                     .background(
-                        if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
+                        animateColorAsState(
+                            if (isAmoled)
+                                MaterialTheme.colorScheme.surfaceDim
+                            else
+                                BottomAppBarDefaults.containerColor,
+                        ).value,
                         MaterialTheme.shapes.extraLarge
                     )
                     .padding(16.dp)
@@ -465,7 +470,12 @@ internal fun YahtzeeScreen(
 internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
     val isAmoled by rememberIsAmoled()
     Surface(
-        color = if (isAmoled) MaterialTheme.colorScheme.surface else BottomAppBarDefaults.containerColor,
+        color = animateColorAsState(
+            if (isAmoled)
+                MaterialTheme.colorScheme.surfaceDim
+            else
+                BottomAppBarDefaults.containerColor,
+        ).value,
         shape = RoundedCornerShape(
             topStart = 16.dp,
             topEnd = 16.dp,
@@ -504,6 +514,7 @@ internal fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                //TODO: Maybe have an option to swap this?
                 Button(
                     onClick = vm::reroll,
                     //&& !vm.rolling fixes the double tap feature
@@ -668,7 +679,7 @@ internal fun SmallScores(
             }
         }
 
-        if (smallScore >= 63) {
+        if (hasBonus) {
             Text("Small Score: ${score + 35} ($score)")
         } else {
             Text("Small Score: $score")
