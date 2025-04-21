@@ -699,45 +699,6 @@ internal fun SmallScores(
 }
 
 @Composable
-private fun SmallScoreItem(
-    handType: HandType,
-    hand: List<Dice>,
-    score: Int,
-    category: String,
-    customBorderColor: Color = Emerald,
-    enabled: Boolean,
-    canScore: Boolean = false,
-    onClick: ScoreClick,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .animateContentSize()
-            .fillMaxWidth(.9f)
-    ) {
-        ScoreButton(
-            category = category,
-            enabled = enabled,
-            score = score,
-            canScore = canScore,
-            customBorderColor = customBorderColor,
-            onClick = onClick,
-            modifier = Modifier.weight(.9f),
-        )
-
-        AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
-            Text(
-                animateIntAsState(handType.getScoreValue(hand)).value.toString(),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.weight(.1f)
-            )
-        }
-    }
-}
-
-@Composable
 internal fun LargeScores(
     isRolling: Boolean,
     hand: List<Dice>,
@@ -835,6 +796,37 @@ internal fun LargeScores(
 }
 
 @Composable
+private fun SmallScoreItem(
+    handType: HandType,
+    hand: List<Dice>,
+    score: Int,
+    category: String,
+    customBorderColor: Color = Emerald,
+    enabled: Boolean,
+    canScore: Boolean = false,
+    onClick: ScoreClick,
+) {
+    ScoreButton(
+        category = category,
+        enabled = enabled,
+        score = score,
+        canScore = canScore,
+        customBorderColor = customBorderColor,
+        onClick = onClick,
+        modifier = Modifier
+            .animateContentSize()
+            .fillMaxWidth(.9f)
+    ) {
+        AnimateHint(
+            handType = handType,
+            hand = hand,
+            getScore = { handType.getScoreValue(hand) },
+            enabled = enabled,
+        )
+    }
+}
+
+@Composable
 private fun LargeScoreItem(
     handType: HandType,
     hand: List<Dice>,
@@ -845,29 +837,39 @@ private fun LargeScoreItem(
     canScore: Boolean = false,
     onClick: ScoreClick,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ScoreButton(
+        category = category,
+        enabled = enabled,
+        score = score,
+        canScore = canScore,
+        onClick = onClick,
         modifier = Modifier
             .animateContentSize()
-            .fillMaxWidth(.9f)
+            .fillMaxWidth(.9f),
     ) {
-        AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
-            Text(
-                animateIntAsState(getScore()).value.toString(),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.weight(.1f)
-            )
-        }
-
-        ScoreButton(
-            category = category,
+        AnimateHint(
+            handType = handType,
+            hand = hand,
+            getScore = getScore,
             enabled = enabled,
-            score = score,
-            canScore = canScore,
-            onClick = onClick,
-            modifier = Modifier.weight(.9f),
+        )
+    }
+}
+
+@Composable
+private fun RowScope.AnimateHint(
+    handType: HandType,
+    hand: List<Dice>,
+    getScore: () -> Int = { handType.getScoreValue(hand) },
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(enabled && handType.canGetScore(hand) && hand.none { it.value == 0 }) {
+        Text(
+            "(${animateIntAsState(getScore()).value})",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outlineVariant,
+            modifier = modifier
         )
     }
 }
@@ -881,6 +883,7 @@ internal fun ScoreButton(
     score: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit = {},
 ) {
     OutlinedCard(
         onClick = onClick,
@@ -907,16 +910,18 @@ internal fun ScoreButton(
                 category,
                 style = MaterialTheme.typography.labelSmall
             )
-            Text(
-                animateIntAsState(score).value.toString(),
-                style = MaterialTheme.typography.labelSmall
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    animateIntAsState(score).value.toString(),
+                    style = MaterialTheme.typography.labelSmall
+                )
+
+                content()
+            }
         }
-        /*Text(
-            "$category: ${animateIntAsState(score).value}",
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(16.dp),
-        )*/
     }
 }
 
