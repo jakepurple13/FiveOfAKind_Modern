@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
@@ -43,11 +44,11 @@ class Dice(value: Int = Random.nextInt(1..6), @Suppress("unused") val location: 
             tonalElevation = 4.dp,
             color = MaterialTheme.colorScheme.primaryContainer,
             enabled = value != 0,
-            border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colorScheme.surface)),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimaryContainer),
             modifier = modifier.size(56.dp)
         ) {
             if (useDots) {
-                DiceDotsPattern(value)
+                DiceDotsPattern(diceValue = value)
             } else {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
@@ -106,9 +107,11 @@ internal fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> 
 }
 
 @Composable
-private fun DiceDotsPattern(diceValue: Int) {
+private fun DiceDotsPattern(
+    diceValue: Int,
+    fontColor: Color = LocalContentColor.current,
+) {
     val fontSize = LocalTextStyle.current.fontSize
-    val fontColor = LocalContentColor.current
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         val radius = fontSize.toPx() / 4

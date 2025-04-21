@@ -4,6 +4,8 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
 import platform.UIKit.UIDevice
 
 class IOSPlatform: Platform {
@@ -18,3 +20,12 @@ actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorSc
 }
 
 internal actual fun YahtzeeViewModel.setup() {}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+actual fun DrawerHandler(
+    enabled: Boolean,
+    onBack: () -> Unit,
+) {
+    BackHandler(enabled, onBack)
+}

@@ -228,6 +228,10 @@ internal fun YahtzeeScreen(
         ) { BottomSheetContent(stats) }
     }
 
+    DrawerHandler(drawerState.isOpen) {
+        scope.launch { drawerState.close() }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {

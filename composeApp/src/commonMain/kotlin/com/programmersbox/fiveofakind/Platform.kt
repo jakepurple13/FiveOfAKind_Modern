@@ -103,3 +103,9 @@ internal fun YahtzeeViewModel.keyEvent(keyEvent: KeyEvent): Boolean {
 }
 
 internal expect fun YahtzeeViewModel.setup()
+
+@Composable
+expect fun DrawerHandler(
+    enabled: Boolean,
+    onBack: () -> Unit,
+)

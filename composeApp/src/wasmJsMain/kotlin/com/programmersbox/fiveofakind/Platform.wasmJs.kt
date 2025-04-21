@@ -253,3 +253,10 @@ internal actual fun YahtzeeViewModel.setup() {
         .onEach { keyEvent(it) }
         .launchIn(viewModelScope)
 }
+
+@Composable
+actual fun DrawerHandler(
+    enabled: Boolean,
+    onBack: () -> Unit,
+) {
+}

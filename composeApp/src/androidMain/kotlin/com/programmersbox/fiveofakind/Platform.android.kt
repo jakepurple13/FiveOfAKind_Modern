@@ -1,6 +1,7 @@
 package com.programmersbox.fiveofakind
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -23,3 +24,11 @@ actual fun colorSchemeSetup(isDarkMode: Boolean, dynamicColor: Boolean): ColorSc
 }
 
 internal actual fun YahtzeeViewModel.setup() {}
+
+@Composable
+actual fun DrawerHandler(
+    enabled: Boolean,
+    onBack: () -> Unit,
+) {
+    BackHandler(enabled, onBack)
+}
