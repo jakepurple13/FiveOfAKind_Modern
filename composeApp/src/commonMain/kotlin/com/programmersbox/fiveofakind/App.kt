@@ -685,7 +685,7 @@ internal fun SmallScores(
                 CircularProgressIndicator(
                     progress = { score / 63f },
                     color = animateColorAsState(
-                        if (score > 63) Emerald else ProgressIndicatorDefaults.circularColor,
+                        if (score >= 63) Emerald else ProgressIndicatorDefaults.circularColor,
                     ).value,
                     modifier = Modifier
                         .size(48.dp)
