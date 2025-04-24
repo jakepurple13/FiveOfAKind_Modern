@@ -141,6 +141,11 @@ android {
         getByName("release") {
             isMinifyEnabled = false
         }
+
+        create("beta") {
+            initWith(getByName("debug"))
+            isDebuggable = false
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
