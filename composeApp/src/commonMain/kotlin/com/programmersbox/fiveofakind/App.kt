@@ -215,7 +215,7 @@ internal fun YahtzeeScreen(
     val isAmoled by rememberIsAmoled()
     val scrollState = rememberScrollState()
 
-    var instructions by YahtzeeInstructions()
+    var instructions by yahtzeeInstructions()
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
@@ -1262,7 +1262,7 @@ private fun SelectableMiniPalette(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun YahtzeeInstructions(): MutableState<Boolean> {
+private fun yahtzeeInstructions(): MutableState<Boolean> {
     val showInstructions = rememberShowInstructions()
 
     if (showInstructions.value) {
