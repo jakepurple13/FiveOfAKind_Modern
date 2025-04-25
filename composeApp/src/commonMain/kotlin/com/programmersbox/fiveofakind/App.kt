@@ -258,7 +258,12 @@ internal fun YahtzeeScreen(
                     },
                     bottomBar = {
                         Surface(
-                            color = BottomAppBarDefaults.containerColor,
+                            color = animateColorAsState(
+                                if (isAmoled)
+                                    MaterialTheme.colorScheme.surfaceDim
+                                else
+                                    BottomAppBarDefaults.containerColor,
+                            ).value,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
@@ -284,7 +289,7 @@ internal fun YahtzeeScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         contentPadding = p,
-                        modifier = Modifier.padding(horizontal = 4.dp)
+                        modifier = Modifier.padding(4.dp)
                     ) {
                         ThemeChange()
 
@@ -1159,6 +1164,7 @@ private fun LazyListScope.ThemeChange() = item {
         ListItem(
             headlineContent = { Text("Theme") },
             supportingContent = { Text(themeColor.name) },
+            trailingContent = { Text("Amoled ${if (isAmoled) "On" else "Off"}") },
         )
     }
 }
