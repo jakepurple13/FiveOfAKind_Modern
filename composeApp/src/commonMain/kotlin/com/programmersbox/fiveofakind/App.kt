@@ -256,14 +256,23 @@ internal fun YahtzeeScreen(
                         )
                     },
                     bottomBar = {
-                        BottomAppBar {
-                            Text(
-                                getPlatform().name,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.outlineVariant,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                        Surface(
+                            color = BottomAppBarDefaults.containerColor
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .windowInsetsPadding(BottomAppBarDefaults.windowInsets)
+                            ) {
+                                Text(
+                                    getPlatform().name,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
                         }
                     }
                 ) { p ->
