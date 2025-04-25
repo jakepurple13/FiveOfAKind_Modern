@@ -237,6 +237,7 @@ internal fun YahtzeeScreen(
         drawerContent = {
             ModalDrawerSheet(
                 drawerContainerColor = MaterialTheme.colorScheme.surface,
+                windowInsets = WindowInsets(0.dp),
             ) {
                 Scaffold(
                     topBar = {
@@ -257,12 +258,14 @@ internal fun YahtzeeScreen(
                     },
                     bottomBar = {
                         Surface(
-                            color = BottomAppBarDefaults.containerColor
+                            color = BottomAppBarDefaults.containerColor,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
-                                    .padding(16.dp)
+                                    .fillMaxWidth()
+                                    .padding(BottomAppBarDefaults.ContentPadding)
                                     .windowInsetsPadding(BottomAppBarDefaults.windowInsets)
                             ) {
                                 Text(
@@ -270,7 +273,9 @@ internal fun YahtzeeScreen(
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.outlineVariant,
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
                                 )
                             }
                         }
