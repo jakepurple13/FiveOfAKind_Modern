@@ -960,8 +960,10 @@ private fun HighScoreItem(
 ) {
     var deleteDialog by remember { mutableStateOf(false) }
 
-    val time = remember(isUsing24HourTime) {
-        val d = Instant.fromEpochMilliseconds(item.time).toLocalDateTime(TimeZone.currentSystemDefault())
+    val time = remember(isUsing24HourTime, item.time) {
+        val d = Instant
+            .fromEpochMilliseconds(item.time)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
         d.format(
             LocalDateTime.Format {
                 monthName(MonthNames.ENGLISH_FULL)
