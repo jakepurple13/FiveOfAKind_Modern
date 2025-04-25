@@ -27,6 +27,8 @@ fun AboutScreen(
         Res.readBytes("files/aboutlibraries.json").decodeToString()
     }
 
+    DrawerHandler(enabled = true, onBack = onBack)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -55,7 +57,7 @@ fun AboutScreen(
 private fun Library(
     item: Library,
 ) {
-    Card {
+    OutlinedCard {
         ListItem(
             headlineContent = { Text(item.name) },
             supportingContent = { Text(item.description.orEmpty()) },
