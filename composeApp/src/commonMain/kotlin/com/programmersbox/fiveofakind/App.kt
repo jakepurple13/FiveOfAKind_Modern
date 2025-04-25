@@ -918,7 +918,8 @@ internal fun ScoreButton(
         ),
         modifier = modifier.pointerHoverIcon(PointerIcon.Hand)
     ) {
-        Row(
+        FlowRow(
+            maxLines = 1,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
