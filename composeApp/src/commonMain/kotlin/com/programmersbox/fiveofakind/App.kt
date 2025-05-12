@@ -36,6 +36,7 @@ import com.materialkolor.palettes.TonalPalette
 import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
+import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import kotlinx.serialization.Serializable
@@ -228,6 +229,30 @@ internal fun YahtzeeScreen(
         ) { BottomSheetContent(stats) }
     }
 
+    val dateTimeFormat by remember {
+        derivedStateOf {
+            LocalDateTime.Format {
+                monthName(MonthNames.ENGLISH_FULL)
+                char(' ')
+                dayOfMonth()
+                char(' ')
+                year()
+                chars(", ")
+                if (isUsing24HourTime) {
+                    hour()
+                    char(':')
+                    minute()
+                } else {
+                    amPmHour()
+                    char(':')
+                    minute()
+                    char(' ')
+                    amPmMarker("AM", "PM")
+                }
+            }
+        }
+    }
+
     DrawerHandler(drawerState.isOpen) {
         scope.launch { drawerState.close() }
     }
@@ -324,7 +349,7 @@ internal fun YahtzeeScreen(
                             HighScoreItem(
                                 item = it,
                                 scaffoldState = drawerState,
-                                isUsing24HourTime = isUsing24HourTime,
+                                dateTimeFormat = dateTimeFormat,
                                 onDelete = { scope.launch { database.removeHighScore(it) } },
                                 modifier = Modifier.animateItem()
                             )
@@ -955,36 +980,16 @@ private fun HighScoreItem(
     item: ActualYahtzeeScoreItem,
     scaffoldState: DrawerState,
     onDelete: () -> Unit,
-    isUsing24HourTime: Boolean,
+    dateTimeFormat: DateTimeFormat<LocalDateTime>,
     modifier: Modifier = Modifier,
 ) {
     var deleteDialog by remember { mutableStateOf(false) }
 
-    val time = remember(isUsing24HourTime, item.time) {
-        val d = Instant
+    val time = remember(dateTimeFormat, item.time) {
+        Instant
             .fromEpochMilliseconds(item.time)
             .toLocalDateTime(TimeZone.currentSystemDefault())
-        d.format(
-            LocalDateTime.Format {
-                monthName(MonthNames.ENGLISH_FULL)
-                char(' ')
-                dayOfMonth()
-                char(' ')
-                year()
-                chars(", ")
-                if (isUsing24HourTime) {
-                    hour()
-                    char(':')
-                    minute()
-                } else {
-                    amPmHour()
-                    char(':')
-                    minute()
-                    char(' ')
-                    amPmMarker("AM", "PM")
-                }
-            }
-        )
+            .format(dateTimeFormat)
     }
 
     val smallScore = item.smallScore
