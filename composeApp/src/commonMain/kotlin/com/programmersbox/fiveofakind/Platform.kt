@@ -1,5 +1,6 @@
 package com.programmersbox.fiveofakind
 
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
@@ -8,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
+import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.ktx.animateColorScheme
 import com.materialkolor.rememberDynamicColorScheme
 import kotlinx.coroutines.flow.Flow
@@ -70,10 +72,12 @@ fun buildColorScheme(
                 else -> rememberDynamicColorScheme(
                     seedColor = themeColor.seedColor,
                     isDark = darkTheme,
-                    isAmoled = isAmoled
+                    isAmoled = isAmoled,
+                    specVersion = ColorSpec.SpecVersion.SPEC_2025
                 )
             }
-        }
+        },
+        animationSpec = spring()
     )
 }
 
