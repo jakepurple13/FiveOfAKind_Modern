@@ -49,13 +49,9 @@ internal class YahtzeeViewModel : ViewModel() {
     fun reroll() {
         viewModelScope.launch {
             rolling = true
-            (0 until hand.size).map { i ->
-                async(Dispatchers.Unconfined) {
-                    if (hand[i] !in hold) {
-                        hand[i].roll()
-                    }
-                }
-            }.awaitAll()
+            hand.filter { it !in hold }
+                .map { async(Dispatchers.Unconfined) { it.roll() } }
+                .awaitAll()
             rolling = false
             state = when (state) {
                 YahtzeeState.RollOne -> YahtzeeState.RollTwo
